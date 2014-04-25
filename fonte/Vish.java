@@ -38,9 +38,9 @@ class Vish{
             b.interpreta(linhas);
             
         } catch (Exception e) {
-            System.out.println("Tu ta de brinqueichion with me cara? QQ é isso que tu paço aqui? " + (args.length > 0 ? args[0] : "(desconhecido)"));
+            System.out.println("Vish... não entendi o arquivo: " + (args.length > 0 ? args[0] : "(desconhecido)"));
             System.out.println("Uso:");
-            System.out.println("    java Blah /caminho/para/arquivo.blah");
+            System.out.println("    java Vish /caminho/para/arquivo.vish");
         }
 	}
 }
