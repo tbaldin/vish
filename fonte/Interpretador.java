@@ -10,28 +10,30 @@
 import java.util.Arrays;
 class Interpretador {
     private String linhas[];
-    
+ 
     public void interpreta(String l[]) {
         int token;
-        String[] mainTokens = {"if","var","while"};
+        String[] mainTokens = {"if","var ","while"};
     	String[] comparadores = {"==",">","<","<>",">=","<=","!="};
     	String[] endOfLines = {";","then","{","}"};
-        String first,resto,arr[];
+    	String[] varSintax = {";","="};
+        String temp,aux,arr[];
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
-				arr = this.linhas[i].split(" ",2);
-				first = arr[0];
-				resto = arr[1];
-
-				token = checkToken(mainTokens,first);
+				token = checkToken(mainTokens,linhas[i]);
 				if(token>=0){
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
 							System.out.println("Condicional if");
 							break;
 						case 1: // verificação de sintaze se for declaração de variável
-							System.out.println("Declaração de variável");
+							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
+								System.out.println("Declaração de variável com atribuição");
+							}else{
+								System.out.println("Declaração de variável sem atribuição");
+							}
+
 							break;
 						case 2: // verificação de sintaxe se for laço
 							System.out.println("Laço while");
@@ -41,19 +43,19 @@ class Interpretador {
 				}else{
 					System.out.println("Não é token, verifica se é variável");
 				}
-				//System.out.println("Linha " + (i + 1) + ": " + this.linhas[i]);
 			}
 		}
 	}
 	private int checkToken(String[] tokens, String part){
 		//Arrays.asList(tokens).indexOf(part);
-		int i=-1;
+		int i;
 		for(i=0;i<tokens.length;i++){
+			//System.out.println("----> Compare: "+tokens[i]+" com "+part.substring(0,tokens[i].length()));
 			if(tokens[i].equals(part.substring(0,tokens[i].length()))){
 				return i;
 			}
 		}
-		return i;
+		return -1;
 	}
 	private int checkIfVariableExists(String name){
 		return 0;

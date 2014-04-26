@@ -1,4 +1,4 @@
-var r = 1;
+var r;
 var r2 = 2;
 if isso e aquilo;
 while outra coisa;
