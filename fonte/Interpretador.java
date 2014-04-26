@@ -34,19 +34,25 @@ class Interpretador {
 								System.out.println("Vish... erro de sintaxe na linha: "+(i+1)+" (esperado: ';', encontrado: '"+linhas[i].substring(linhas[i].length()-1,linhas[i].length())+"')");
 								return -1;	
 							} 
-							if(checkVarExists(linhas[i].substring(mainTokens[1].length(),linhas[i].length()))==-1){
+							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).contains(varSintax[1])){
+								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).split(varSintax[1],2)[0];
+							}else{
+								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length());
+							}
+							System.out.println("checkVarExists("+temp.trim()+")");
+							if(checkVarExists(temp.trim())==-1){
 								if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
 									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split(varSintax[1],2);
 									v=nextEmptyVar();
-									vars[v] = new Variavel(arr[0]);
+									this.vars[v] = new Variavel(arr[0]);
 									op=checkOperation(math,arr[1]);
 									if(op==-1){
 										System.out.println("-- Declaração com atribuição simples de "+arr[1].substring(0,arr[1].length()-1).trim()+" a "+arr[0]);
-										vars[v].valor = Double.parseDouble(arr[1].substring(0,arr[1].length()-1).trim());
+										this.vars[v].valor = Double.parseDouble(arr[1].substring(0,arr[1].length()-1).trim());
 									}else{
 										System.out.println("-- Declaração com atribuição com a operação: "+arr[1]);
 										arr = arr[1].substring(0,arr[1].length()-1).trim().split("\\"+math[op],2);
-										vars[v].valor = ULA(Double.parseDouble(arr[0].trim()),Double.parseDouble(arr[1].trim()),op);
+										this.vars[v].valor = ULA(Double.parseDouble(arr[0].trim()),Double.parseDouble(arr[1].trim()),op);
 									}
 									System.out.println("----- OK. Variável "+vars[v].nome+" criada com valor "+vars[v].valor);
 								}else{
@@ -56,6 +62,7 @@ class Interpretador {
 								}
 							}else{
 								System.out.println("ERRO: Vish... essa variável já foi declarada cara...");
+								return -1;
 							}
 							break;
 						case 2: // verificação de sintaxe se for laço
@@ -93,7 +100,7 @@ class Interpretador {
 	private int checkVarExists(String name){
 		int i=0;
 		while(this.vars[i]!=null){
-			if(this.vars[i].equals(name)){
+			if(this.vars[i].igual(name)){
 				return i;
 			}
 			i++;
