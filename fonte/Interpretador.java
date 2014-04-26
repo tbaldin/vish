@@ -12,8 +12,8 @@ class Interpretador {
     private String linhas[];
  	private Variavel[] vars = new Variavel[1000];
 
-    public void interpreta(String l[]) {
-        int token,op;
+    public int interpreta(String l[]) {
+        int token,op,v;
         String[] mainTokens = {"if","var ","while"};
     	String[] logical = {"==",">","<","<>",">=","<=","!="};
     	String[] math = {"+","-","*","/","%"};
@@ -30,19 +30,25 @@ class Interpretador {
 							System.out.println("Condicional if");
 							break;
 						case 1: // verificação de sintaze se for declaração de variável
+							if(!linhas[i].substring(linhas[i].length()-1,linhas[i].length()).equals(varSintax[0])) {
+								System.out.println("Vish... erro de sintaxe na linha: "+(i+1)+" (esperado: ';', encontrado: '"+linhas[i].substring(linhas[i].length()-1,linhas[i].length())+"')");
+								return -1;	
+							} 
 							if(checkVarExists(linhas[i].substring(mainTokens[1].length(),linhas[i].length()))==-1){
 								if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
-									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split("=",2);
-									System.out.println("Operação de atribuição: "+arr[0]+" recebe "+arr[1]);
+									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split(varSintax[1],2);
+									v=nextEmptyVar();
+									vars[v] = new Variavel(arr[0]);
 									op=checkOperation(math,arr[1]);
 									if(op==-1){
-										System.out.println("Atribuição simples");
+										System.out.println("-- Declaração com atribuição simples de "+arr[1].substring(0,arr[1].length()-1).trim()+" a "+arr[0]);
+										vars[v].valor = Double.parseDouble(arr[1].substring(0,arr[1].length()-1).trim());
 									}else{
-										System.out.println("Atribuição com '"+math[op]+"'");
+										System.out.println("-- Declaração com atribuição com a operação: "+arr[1]);
+										arr = arr[1].substring(0,arr[1].length()-1).trim().split("\\"+math[op],2);
+										vars[v].valor = ULA(Double.parseDouble(arr[0].trim()),Double.parseDouble(arr[1].trim()),op);
 									}
-
-								
-
+									System.out.println("----- OK. Variável "+vars[v].nome+" criada com valor "+vars[v].valor);
 								}else{
 									System.out.println("Declaração de variável sem atribuição");
 									
@@ -62,6 +68,7 @@ class Interpretador {
 				}
 			}
 		}
+		return 0;
 	}
 
 	private int checkToken(String[] tokens, String part){
