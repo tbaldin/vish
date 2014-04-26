@@ -10,11 +10,12 @@
 import java.util.Arrays;
 class Interpretador {
     private String linhas[];
-    private String[] tokens = {"if","var","while"};
-    private String[] comparadores = {"==",">","<","<>",">=","<=","!="};
     
     public void interpreta(String l[]) {
         int token;
+        String[] mainTokens = {"if","var","while"};
+    	String[] comparadores = {"==",">","<","<>",">=","<=","!="};
+    	String[] endOfLines = {";","then","{","}"};
         String first,resto,arr[];
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
@@ -22,7 +23,8 @@ class Interpretador {
 				arr = this.linhas[i].split(" ",2);
 				first = arr[0];
 				resto = arr[1];
-				token = Arrays.asList(this.tokens).indexOf(first);
+
+				token = checkToken(mainTokens,first);
 				if(token>=0){
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
@@ -43,4 +45,18 @@ class Interpretador {
 			}
 		}
 	}
+	private int checkToken(String[] tokens, String part){
+		//Arrays.asList(tokens).indexOf(part);
+		int i=-1;
+		for(i=0;i<tokens.length;i++){
+			if(tokens[i].equals(part.substring(0,tokens[i].length()))){
+				return i;
+			}
+		}
+		return i;
+	}
+	private int checkIfVariableExists(String name){
+		return 0;
+	}
+
 }
