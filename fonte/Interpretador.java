@@ -29,36 +29,63 @@ class Interpretador {
 						case 0: // verificação de sintaxe se for condicional
 							System.out.println("Condicional if");
 							break;
-						case 1: // verificação de sintaze se for declaração de variável
+						case 1: // DECLARAÇÃO DE VARIÁVEL
+							// Verifica se a linha termina com ';' respeitando a sintaxe.
 							if(!linhas[i].substring(linhas[i].length()-1,linhas[i].length()).equals(varSintax[0])) {
 								System.out.println("Vish... erro de sintaxe na linha: "+(i+1)+" (esperado: ';', encontrado: '"+linhas[i].substring(linhas[i].length()-1,linhas[i].length())+"')");
 								return -1;	
 							} 
+
+							// Verifica se na declaração existe uma atribuição de valor
 							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).contains(varSintax[1])){
 								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).split(varSintax[1],2)[0];
 							}else{
 								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()-1);
 							}
-							System.out.println("checkVarExists("+temp.trim()+")");
+							//temp conterá o nome da variável a ser declarada.
+
+							//Verifica se já existe uma variável com este nome.
 							if(checkVarExists(temp.trim())==-1){
+								
+								//Busca o próximo espaço livre para guardar a variável
 								v=nextEmptyVar();
+
+								//Verifica novamente se irá exisitir uma atribuição de valor
 								if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
+
+									// Divide a String em um vetor de duas posições: antes e depois da igualdade
 									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split(varSintax[1],2);
+									
+									// Cria uma variável com o nome localizado antes da igualdade
 									this.vars[v] = new Variavel(arr[0]);
+									
+									// Verifica se existe uma operação matemática no outro lado da igualdade da String
 									op=checkOperation(math,arr[1]);
+									
+									// -1 significa que não há operação, neste caso é uma atribuição simples.
 									if(op==-1){
 										System.out.println("-- Declaração com atribuição simples de "+arr[1].substring(0,arr[1].length()-1).trim()+" a "+arr[0]);
 										this.vars[v].valor = Double.parseDouble(arr[1].substring(0,arr[1].length()-1).trim());
+									
+									// Atribuição com operação entre dois números
 									}else{
 										System.out.println("-- Declaração com atribuição com a operação: "+arr[1]);
+										// Quebra a operação em um vetor de duas posições: antes e depois do operando
 										arr = arr[1].substring(0,arr[1].length()-1).trim().split("\\"+math[op],2);
-										this.vars[v].valor = ULA(Double.parseDouble(arr[0].trim()),Double.parseDouble(arr[1].trim()),op);
+										
+										//Verifica se os dois operandos são números
+										if(tryParse(arr[0])&&tryParse(arr[1])){
+											// Joga para o valor da variável o retorno do método ULA que recebeu os dois operandos e o número da operação
+											this.vars[v].valor = ULA(Double.parseDouble(arr[0].trim()),Double.parseDouble(arr[1].trim()),op);
+										}else{
+											System.out.println("-- Declaração com atribuição contendo variáveis.");
+										}
 									}
-									System.out.println("----- OK. Variável "+vars[v].nome+" criada com valor "+vars[v].valor);
 								}else{
 									System.out.println("-- Declaração de variável sem atribuição: "+temp);
-									this.vars[v] = new Variavel(temp.trim().substring(0,temp.length()-1));
+									this.vars[v] = new Variavel(temp.trim().substring(0,temp.length()));
 								}
+								System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
 							}else{
 								System.out.println("ERRO: Vish... essa variável já foi declarada cara...");
 								return -1;
@@ -67,6 +94,8 @@ class Interpretador {
 						case 2: // verificação de sintaxe se for laço
 							System.out.println("Laço while");
 							break;
+						case 3:
+							System.out.println("Imprime na tela: ");
 						default: break;
 					}
 				}else{
@@ -75,6 +104,15 @@ class Interpretador {
 			}
 		}
 		return 0;
+	}
+
+	public static boolean tryParse(String number){
+		try{
+			double a = Double.parseDouble(number);
+			return true;
+		}catch (NumberFormatException e) {
+			return false;
+		}
 	}
 
 	private int checkToken(String[] tokens, String part){
