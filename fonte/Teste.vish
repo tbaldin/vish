@@ -1,7 +1,8 @@
 var r;
 var r2 = 2;
-var r3 = 2 + r;
+var r3 = 2 + 2;
 var r4 = 2 * 4;
-print r;
+r3 = 1;
+print r3;
 if isso e aquilo;
 while outra coisa;

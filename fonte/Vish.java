@@ -17,7 +17,7 @@ class Vish{
         Interpretador b;
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
         
-        try {
+        try{
             // Referencia o arquivo. args[0] conterá os dados passados pela linha de comando.
             f = new File(args[0]);
             // Mandamos o Scanner ler a partir do arquivo.
@@ -39,7 +39,7 @@ class Vish{
                 System.out.println("Houston we temos um problema here! Abortar missão.");
             }
             
-        } catch (Exception e) {
+        }catch (Exception e){
             System.out.println("Vish... não entendi o arquivo: " + (args.length > 0 ? args[0] : "(desconhecido)"));
             System.out.println("Uso:");
             System.out.println("    java Vish /caminho/para/arquivo.vish");
