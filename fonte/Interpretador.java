@@ -14,7 +14,7 @@ class Interpretador {
 
     public int interpreta(String l[]) {
         int token,op,v;
-        String[] mainTokens = {"if","var ","while"};
+        String[] mainTokens = {"if","var ","while","print "};
     	String[] logical = {"==",">","<","<>",">=","<=","!="};
     	String[] math = {"+","-","*","/","%"};
     	String[] endOfLines = {"then","{","}"};
@@ -37,13 +37,13 @@ class Interpretador {
 							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).contains(varSintax[1])){
 								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).split(varSintax[1],2)[0];
 							}else{
-								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length());
+								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()-1);
 							}
 							System.out.println("checkVarExists("+temp.trim()+")");
 							if(checkVarExists(temp.trim())==-1){
+								v=nextEmptyVar();
 								if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
 									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split(varSintax[1],2);
-									v=nextEmptyVar();
 									this.vars[v] = new Variavel(arr[0]);
 									op=checkOperation(math,arr[1]);
 									if(op==-1){
@@ -56,9 +56,8 @@ class Interpretador {
 									}
 									System.out.println("----- OK. Variável "+vars[v].nome+" criada com valor "+vars[v].valor);
 								}else{
-									System.out.println("Declaração de variável sem atribuição");
-									
-
+									System.out.println("-- Declaração de variável sem atribuição: "+temp);
+									this.vars[v] = new Variavel(temp.trim().substring(0,temp.length()-1));
 								}
 							}else{
 								System.out.println("ERRO: Vish... essa variável já foi declarada cara...");
