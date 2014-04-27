@@ -5,7 +5,7 @@ var r4 = 3 *            4
 r3 =    1/0
 print    r3
 print 8
-if                 r3==R) then
+if                 (r3==R)  then  
 	print 1
 end if
 while outra coisa

@@ -9,11 +9,19 @@
 
 class Ula{
 	public String[] math = {"*","/","%","+","-"};
+	public String[] logical = {"==",">","<","<>",">=","<=","!="};
 
 	public int checkOperation(String part){
 		int i;
 		for(i=0;i<this.math.length;i++)
 			if(part.contains(this.math[i])) return i;
+		return -1;
+	}
+
+	public int checkLogicOperation(String part){
+		int i;
+		for(i=0;i<this.logical.length;i++)
+			if(part.contains(this.logical[i])) return i;
 		return -1;
 	}
 

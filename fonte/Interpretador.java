@@ -15,11 +15,10 @@ class Interpretador {
     public int interpreta(String l[]) {
         int token,op,v;
         String[] mainTokens = {"if","var ","while","print "};
-        String[] condTokens = {"(",")","end if"};
-    	String[] logical = {"==",">","<","<>",">=","<=","!="};
-    	String[] endOfLines = {"then","{","}"};
+        String[] condTokens = {"(",")","end if","then"};
+    	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
-        String temp,aux,arr[],eol;
+        String temp,aux,arr[],eol,str;
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
@@ -30,24 +29,53 @@ class Interpretador {
 						case 0: // verificação de sintaxe se for condicional
 							System.out.println("Condicional if");
 
-							// Verifica o início da condição procurando pelo parenteses.
-							if(linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim().substring(0,1).equals(condTokens[0])){
+							// linha tirando o IF do inicio, não interessa mais.
+							str = linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim();
+
+							// Verifica o início da condição procurando pelo parenteses no inicio e pelo final de linha
+							if(str.substring(0,1).equals(condTokens[0])&&(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3]))){
 								
+								// remove o then do final, não interessa mais
+								str = str.substring(0,str.length()-condTokens[3].length()).trim();
+								
+								// Verifica se termina com parenteses
+								if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
+									
+									//remove o parenteses do final, não interessa mais. Fica só a condição.
+									str = str.substring(1,str.length()-1);
+									
+									System.out.println(str);
+									
+									//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
+									if(this.ula.checkLogicOperation(str)>=0){
+								
+								
+
+
+
+
+									}else{
+										System.out.println("Condicional IF sem condição. Você é uma piada hein!");
+										return -1;
+									}
+								}else{
+									System.out.println("A sintaxe do condicional é: 'if(<condicao>) then'. Entendeu agora fera?");
+									return -1;
+								}
 							}else{ // Se não encontrou o parenteses depois do IF
-								System.out.println("IF espera um '(' não um '"+linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim().substring(0,1)+"'");
+								System.out.println("A sintaxe do condicional é: 'if(<condicao>) then'. Entendeu agora fera?");
 								return -1;
 							}
-
-
-
-
 							break;
 						case 1: // DECLARAÇÃO DE VARIÁVEL
 								// Verifica se na declaração existe uma atribuição de valor
-							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).contains(varSintax[1])){
-								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).split(varSintax[1],2)[0];
+
+							// linha tirando o var do inicio, não interessa mais.
+							str = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim();
+							if(str.contains(varSintax[1])){
+								temp = str.split(varSintax[1],2)[0];
 							}else{
-								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length());
+								temp = str;
 							}//temp conterá o nome da variável a ser declarada.
 
 							//Verifica se já existe uma variável com este nome.
@@ -57,10 +85,10 @@ class Interpretador {
 								v=nextEmptyVar();
 
 								//Verifica novamente se irá exisitir uma atribuição de valor
-								if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().contains(varSintax[1])){
+								if(str.contains(varSintax[1])){
 
 									// Divide a String em um vetor de duas posições: antes e depois da igualdade
-									arr = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim().split(varSintax[1],2);
+									arr = str.split(varSintax[1],2);
 									
 									// Cria uma variável com o nome localizado antes da igualdade
 									this.vars[v] = new Variavel(new String(arr[0]));
