@@ -32,36 +32,31 @@ class Interpretador {
 							// linha tirando o IF do inicio, não interessa mais.
 							str = linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim();
 
-							// Verifica o início da condição procurando pelo parenteses no inicio e pelo final de linha
-							if(str.substring(0,1).equals(condTokens[0])&&(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3]))){
+							// procura o then no final da linha
+							if(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3])){
 								
 								// remove o then do final, não interessa mais
 								str = str.substring(0,str.length()-condTokens[3].length()).trim();
 								
 								// Verifica se termina com parenteses
 								if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
-									
-									//remove o parenteses do final, não interessa mais. Fica só a condição.
+									//remove os parenteses, não interessa mais. Fica só a condição.
 									str = str.substring(1,str.length()-1);
+								}
+								System.out.println(str);	
+								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
+								if(this.ula.checkLogicOperation(str)>=0){
 									
-									System.out.println(str);
-									
-									//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
-									if(this.ula.checkLogicOperation(str)>=0){
-								
-								
 
 
 
 
-									}else{
-										System.out.println("Condicional IF sem condição. Você é uma piada hein!");
-										return -1;
-									}
+
 								}else{
-									System.out.println("A sintaxe do condicional é: 'if(<condicao>) then'. Entendeu agora fera?");
+									System.out.println("Condicional IF sem condição. Você é uma piada hein!");
 									return -1;
 								}
+						
 							}else{ // Se não encontrou o parenteses depois do IF
 								System.out.println("A sintaxe do condicional é: 'if(<condicao>) then'. Entendeu agora fera?");
 								return -1;
