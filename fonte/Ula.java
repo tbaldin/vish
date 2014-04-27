@@ -51,7 +51,8 @@ class Ula{
 		}
 	}
 
-	public boolean logicalSolve(){
+	public boolean opLogical(String op){
+		
 
 		return false;
 	}

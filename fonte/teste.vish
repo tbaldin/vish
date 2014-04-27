@@ -1,14 +1,9 @@
-var    R
-var _4r2    =  2
-var r3 = 2 +                                2
-var r4 = 3 *            4
-r3 =    1/0
-print    r3
-print 8
-if                 (r3==R)  then  
-if (r==5 then
-if r==5) then
-if(r==5) then
+var R
+var j=1
+if R==j then
+	var h = 1
+	var f = 2
 	print 1
 end if
+print 2
 while outra coisa

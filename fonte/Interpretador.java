@@ -13,12 +13,13 @@ class Interpretador {
 	private Variavel[] vars = new Variavel[1000];
 	private Ula ula = new Ula();
 	public int interpreta(String l[]) {
-        int token,op,v;
+        int token,op,v,j,k;
+        Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
         String[] condTokens = {"(",")","end if","then"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
-        String temp,aux,arr[],eol,str;
+        String temp,aux,arr[],eol,str,l_escopo[];
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
@@ -49,15 +50,23 @@ class Interpretador {
 									System.out.println("E o inicio desse parenteses aberto, enfio onde?");
 									return -1;
 								}
-								System.out.println(str);	
 								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
 								if(this.ula.checkLogicOperation(str)>=0){
-									
-
-
-
-
-
+									for (k=i+1;linhas[k]!=null;k++) {
+										if(linhas[k].trim().equals(condTokens[2])){
+											break;
+										}
+									}
+									// Se o resultado da condição for true
+									if(true){
+										escopo = new Interpretador();
+										arr = new String[1000];
+										for(j=i+1;j<k;j++){
+											arr[j-i-1]=linhas[j];
+										}
+										escopo.interpreta(arr);
+									}
+									i=k;
 								}else{
 									System.out.println("Condicional IF sem condição. Você é uma piada hein!");
 									return -1;
