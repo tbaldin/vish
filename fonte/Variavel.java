@@ -1,3 +1,11 @@
+/**
+ * Classe de variáveis do interpretador
+ *
+ * Modelo de variável do interpretador
+ * 
+ * Por Régis Thiago Feyh <registhiagofeyh@gmail.com>
+ */
+
 class Variavel{
 	public String nome;
 	public double valor;

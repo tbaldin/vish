@@ -1,3 +1,12 @@
+/**
+ * Classe para realizar cálculos
+ *
+ * Executa as operações lógicas e aritméticas do interpretador
+ *
+ * 
+ * Por Régis Thiago Feyh <registhiagofeyh@gmail.com>
+ */
+
 class Ula{
 	public String[] math = {"*","/","%","+","-"};
 
