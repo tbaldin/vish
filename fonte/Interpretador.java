@@ -11,7 +11,7 @@ import java.util.Arrays;
 class Interpretador {
     private String linhas[];
  	private Variavel[] vars = new Variavel[1000];
-
+ 	private Ula ula = new Ula();
     public int interpreta(String l[]) {
         int token,op,v;
         String[] mainTokens = {"if","var ","while","print "};
@@ -58,7 +58,6 @@ class Interpretador {
 										return -1;
 									}
 								}else{
-									System.out.println("-- Declaração de variável sem atribuição: "+temp);
 									this.vars[v] = new Variavel(new String(temp.trim().substring(0,temp.trim().length())));
 								}
 								System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
@@ -72,7 +71,7 @@ class Interpretador {
 							break;
 						case 3:
 							arr = linhas[i].split(" ",2);
-							if(tryParse(arr[1])){ // Verifica se é um número
+							if(this.ula.tryParse(arr[1])){ // Verifica se é um número
 								System.out.println(arr[1].trim());
 							}else{ // Se fo variável testa se existe e imprime seu valor.
 								v = checkVarExists(arr[1].trim().substring(0,arr[1].trim().length()));
@@ -101,15 +100,6 @@ class Interpretador {
 		return 0;
 	}
 
-	public static boolean tryParse(String number){
-		try{
-			double a = Double.parseDouble(number);
-			return true;
-		}catch (NumberFormatException e) {
-			return false;
-		}
-	}
-
 	private int checkToken(String[] tokens, String part){
 		//Arrays.asList(tokens).indexOf(part);
 		int i;
@@ -119,13 +109,6 @@ class Interpretador {
 				return i;
 			}
 		}
-		return -1;
-	}
-
-	private int checkOperation(String[] tokens, String part){
-		int i;
-		for(i=0;i<tokens.length;i++)
-			if(part.contains(tokens[i])) return i;
 		return -1;
 	}
 
@@ -152,37 +135,18 @@ class Interpretador {
 		return i;
 	}
 
-	private double ULA(double a, double b, int op){ //String[] math = {"+","-","*","/","%"};
-		switch(op){
-			case 0:
-				return a+b;
-			case 1:
-				return a-b;
-			case 2:
-				return a*b;
-			case 3:
-				if(b==0.0) return -666.6;
-				return a/a;
-			case 4:
-				return a%b;
-			default: return -1.0;
-		}
-	}
-
 	private boolean atribuicao(String varName, String operacao){
-		String[] math = {"+","-","*","/","%"};
 		String arr[];
 		int op,varPos=checkVarExists(varName.trim());
 		Variavel v;
 		if(varPos>=0){
 			v=this.vars[varPos];
 			// Verifica se existe uma operação matemática no outro lado da igualdade da String
-			op=checkOperation(math,operacao);
+			op=this.ula.checkOperation(operacao);
 			
 			// -1 significa que não há operação, neste caso é uma atribuição simples.
 			if(op==-1){
-				System.out.println("-- Atribuição simples: '"+operacao.trim()+"'");
-				if(tryParse(operacao.trim())){
+				if(this.ula.tryParse(operacao.trim())){
 					v.valor = Double.parseDouble(operacao.trim());
 				}else{
 					System.out.println("-- Atribuição contendo variável. Ainda não implementado");
@@ -190,14 +154,13 @@ class Interpretador {
 			
 			// Atribuição com operação entre dois números
 			}else{
-				System.out.println("-- Atribuição com a operação ("+math[op]+") em: '"+operacao.substring(0,operacao.length()).trim()+"'");
 				// Quebra a operação em um vetor de duas posições: antes e depois do operando
-				arr = operacao.substring(0,operacao.length()).trim().split("\\"+math[op],2);
+				arr = operacao.substring(0,operacao.length()).trim().split("\\"+this.ula.math[op],2);
 				
 				//Verifica se os dois operandos são números
-				if(tryParse(arr[0])&&tryParse(arr[1])){
+				if(this.ula.tryParse(arr[0])&&this.ula.tryParse(arr[1])){
 					// Joga para o valor da variável o retorno do método ULA que recebeu os dois operandos e o número da operação
-					v.valor = ULA(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
+					v.valor = this.ula.opUla(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
 				}else{
 					System.out.println("-- Atribuição contendo operação com variáveis. Ainda não implementado");
 				}
