@@ -1,8 +1,9 @@
-var    r
-var r2    =  2
+var    R
+var _4r2    =  2
 var r3 = 2 +                                2
 var r4 = 2 *            4
     r3 =    1
 print             r3
+print 8
 if isso e aquilo
 while outra coisa

@@ -63,7 +63,7 @@ class Interpretador {
 								}
 								System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
 							}else{
-								System.out.println("ERRO: Vish... essa variável já foi declarada cara...");
+								System.out.println("ERRO: Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
 								return -1;
 							}
 							break;
@@ -72,12 +72,16 @@ class Interpretador {
 							break;
 						case 3:
 							arr = linhas[i].split(" ",2);
-							v = checkVarExists(arr[1].trim().substring(0,arr[1].trim().length()));
-							if(v>=0)
-								System.out.println(this.vars[v].valor);
-							else{
-								System.out.println("Variável '"+arr[1].trim().substring(0,arr[1].trim().length())+"' não encontrada");
-								return -1;
+							if(tryParse(arr[1])){ // Verifica se é um número
+								System.out.println(arr[1].trim());
+							}else{ // Se fo variável testa se existe e imprime seu valor.
+								v = checkVarExists(arr[1].trim().substring(0,arr[1].trim().length()));
+								if(v>=0)
+									System.out.println(this.vars[v].valor);
+								else{ // Se a variável não existe aborta
+									System.out.println("Variável '"+arr[1].trim().substring(0,arr[1].trim().length())+"' não encontrada");
+									return -1;
+								}
 							}
 							break;
 						default: break;
@@ -127,11 +131,17 @@ class Interpretador {
 
 	private int checkVarExists(String name){
 		int i=0;
-		while(this.vars[i]!=null){
-			if(this.vars[i].igual(name)){
-				return i;
+		String permitidos = "abcdefghijklmnopqrstuvxyz_";
+		if(permitidos.contains(name.trim().substring(0,1).toLowerCase())){
+			while(this.vars[i]!=null){
+				if(this.vars[i].igual(name)){
+					return i;
+				}
+				i++;
 			}
-			i++;
+		}else{
+			System.out.println("Nome de variável inválido.");
+			return -2;
 		}
 		return -1;
 	}
