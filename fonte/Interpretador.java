@@ -30,17 +30,11 @@ class Interpretador {
 							System.out.println("Condicional if");
 							break;
 						case 1: // DECLARAÇÃO DE VARIÁVEL
-							// Verifica se a linha termina com ';' respeitando a sintaxe.
-							if(!linhas[i].substring(linhas[i].length()-1,linhas[i].length()).equals(varSintax[0])) {
-								System.out.println("Vish... erro de sintaxe na linha: "+(i+1)+" (esperado: ';', encontrado: '"+linhas[i].substring(linhas[i].length()-1,linhas[i].length())+"')");
-								return -1;	
-							} 
-
-							// Verifica se na declaração existe uma atribuição de valor
+								// Verifica se na declaração existe uma atribuição de valor
 							if(linhas[i].substring(mainTokens[1].length(),linhas[i].length()).contains(varSintax[1])){
 								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).split(varSintax[1],2)[0];
 							}else{
-								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length()-1);
+								temp = linhas[i].substring(mainTokens[1].length(),linhas[i].length());
 							}//temp conterá o nome da variável a ser declarada.
 
 							//Verifica se já existe uma variável com este nome.
@@ -59,13 +53,13 @@ class Interpretador {
 									this.vars[v] = new Variavel(new String(arr[0]));
 									
 									// metodo para atribuição de valores
-									if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()-1))){
+									if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
 										System.out.println("Falha ao atribuir valor à variável "+this.vars[v].nome);
 										return -1;
 									}
 								}else{
 									System.out.println("-- Declaração de variável sem atribuição: "+temp);
-									this.vars[v] = new Variavel(new String(temp.trim().substring(0,temp.length())));
+									this.vars[v] = new Variavel(new String(temp.trim().substring(0,temp.trim().length())));
 								}
 								System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
 							}else{
@@ -78,11 +72,11 @@ class Interpretador {
 							break;
 						case 3:
 							arr = linhas[i].split(" ",2);
-							v = checkVarExists(arr[1].substring(0,arr[1].length()-1));
+							v = checkVarExists(arr[1].substring(0,arr[1].length()));
 							if(v>=0)
 								System.out.println(this.vars[v].valor);
 							else{
-								System.out.println("Variável '"+arr[1].substring(0,arr[1].length()-1)+"' não encontrada");
+								System.out.println("Variável '"+arr[1].substring(0,arr[1].length())+"' não encontrada");
 								return -1;
 							}
 							break;
@@ -90,7 +84,7 @@ class Interpretador {
 					}
 				}else if(linhas[i].contains(varSintax[1])){
 						arr = linhas[i].split(varSintax[1],2);
-						if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()-1))){
+						if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))){
 							System.out.println("Falha na atribuição de valor");
 							return -1;
 						}
@@ -117,7 +111,7 @@ class Interpretador {
 		int i;
 		for(i=0;i<tokens.length;i++){
 			//System.out.println("----> Compare: "+tokens[i]+" com "+part.substring(0,tokens[i].length()));
-			if(tokens[i].equals(part.substring(0,tokens[i].length()))){
+			if(tokens[i].equals(part.trim().substring(0,tokens[i].length()))){
 				return i;
 			}
 		}
@@ -186,9 +180,9 @@ class Interpretador {
 			
 			// Atribuição com operação entre dois números
 			}else{
-				System.out.println("-- Atribuição com a operação ("+math[op]+") em: '"+operacao.substring(0,operacao.length()-1).trim()+"'");
+				System.out.println("-- Atribuição com a operação ("+math[op]+") em: '"+operacao.substring(0,operacao.length()).trim()+"'");
 				// Quebra a operação em um vetor de duas posições: antes e depois do operando
-				arr = operacao.substring(0,operacao.length()-1).trim().split("\\"+math[op],2);
+				arr = operacao.substring(0,operacao.length()).trim().split("\\"+math[op],2);
 				
 				//Verifica se os dois operandos são números
 				if(tryParse(arr[0])&&tryParse(arr[1])){
