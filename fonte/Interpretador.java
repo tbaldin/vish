@@ -72,11 +72,11 @@ class Interpretador {
 							break;
 						case 3:
 							arr = linhas[i].split(" ",2);
-							v = checkVarExists(arr[1].substring(0,arr[1].length()));
+							v = checkVarExists(arr[1].trim().substring(0,arr[1].trim().length()));
 							if(v>=0)
 								System.out.println(this.vars[v].valor);
 							else{
-								System.out.println("Variável '"+arr[1].substring(0,arr[1].length())+"' não encontrada");
+								System.out.println("Variável '"+arr[1].trim().substring(0,arr[1].trim().length())+"' não encontrada");
 								return -1;
 							}
 							break;
