@@ -9,10 +9,10 @@
  */
 import java.util.Arrays;
 class Interpretador {
-    private String linhas[];
- 	private Variavel[] vars = new Variavel[1000];
- 	private Ula ula = new Ula();
-    public int interpreta(String l[]) {
+	private String linhas[];
+	private Variavel[] vars = new Variavel[1000];
+	private Ula ula = new Ula();
+	public int interpreta(String l[]) {
         int token,op,v;
         String[] mainTokens = {"if","var ","while","print "};
         String[] condTokens = {"(",")","end if","then"};
@@ -27,8 +27,6 @@ class Interpretador {
 				if(token>=0){
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
-							System.out.println("Condicional if");
-
 							// linha tirando o IF do inicio, não interessa mais.
 							str = linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim();
 
@@ -38,10 +36,18 @@ class Interpretador {
 								// remove o then do final, não interessa mais
 								str = str.substring(0,str.length()-condTokens[3].length()).trim();
 								
-								// Verifica se termina com parenteses
-								if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
-									//remove os parenteses, não interessa mais. Fica só a condição.
-									str = str.substring(1,str.length()-1);
+								// Verifica se inicia e termina com parenteses
+								if(str.substring(0,1).equals(condTokens[0])){
+									if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
+										//remove os parenteses, não interessa mais. Fica só a condição.
+										str = str.substring(1,str.length()-1);
+									}else{
+										System.out.println("Parenteses aberto na linha sem fechamento. Que vergonha hein.");
+										return -1;
+									}
+								}else if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
+									System.out.println("E o inicio desse parenteses aberto, enfio onde?");
+									return -1;
 								}
 								System.out.println(str);	
 								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
@@ -196,7 +202,7 @@ class Interpretador {
 				//Verifica se os dois operandos são números
 				if(this.ula.tryParse(arr[0])&&this.ula.tryParse(arr[1])){
 					// Joga para o valor da variável o retorno do método ULA que recebeu os dois operandos e o número da operação
-					v.valor = this.ula.opUla(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
+					v.valor = this.ula.opMath(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
 				}else{
 					System.out.println("-- Atribuição contendo operação com variáveis. Ainda não implementado");
 				}

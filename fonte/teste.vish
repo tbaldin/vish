@@ -6,6 +6,9 @@ r3 =    1/0
 print    r3
 print 8
 if                 (r3==R)  then  
+if (r==5 then
+if r==5) then
+if(r==5) then
 	print 1
 end if
 while outra coisa

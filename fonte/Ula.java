@@ -34,7 +34,7 @@ class Ula{
 		}
 	}
 
-	public double opUla(double a, double b, int op){
+	public double opMath(double a, double b, int op){
 		switch(op){
 			case 0:
 				return a*b;
@@ -50,4 +50,10 @@ class Ula{
 			default: return -1.0;
 		}
 	}
+
+	public boolean logicalSolve(){
+
+		return false;
+	}
+
 }
