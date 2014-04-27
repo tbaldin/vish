@@ -36,7 +36,7 @@ class Vish{
             // Inicializamos o interpretador com o vetor de linhas. A partir
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.
             if(b.interpreta(linhas)!=0){
-                System.out.println("Houston we temos um problema here! Abortar missão.");
+                System.out.println("Houston o macaco não entendou o treinamento! Abortar missão.");
             }
             
         }catch (Exception e){

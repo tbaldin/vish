@@ -15,6 +15,7 @@ class Interpretador {
     public int interpreta(String l[]) {
         int token,op,v;
         String[] mainTokens = {"if","var ","while","print "};
+        String[] condTokens = {"(",")","end if"};
     	String[] logical = {"==",">","<","<>",">=","<=","!="};
     	String[] endOfLines = {"then","{","}"};
     	String[] varSintax = {";","="};
@@ -28,6 +29,18 @@ class Interpretador {
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
 							System.out.println("Condicional if");
+
+							// Verifica o início da condição procurando pelo parenteses.
+							if(linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim().substring(0,1).equals(condTokens[0])){
+								
+							}else{ // Se não encontrou o parenteses depois do IF
+								System.out.println("IF espera um '(' não um '"+linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim().substring(0,1)+"'");
+								return -1;
+							}
+
+
+
+
 							break;
 						case 1: // DECLARAÇÃO DE VARIÁVEL
 								// Verifica se na declaração existe uma atribuição de valor
