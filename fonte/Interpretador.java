@@ -20,7 +20,7 @@ class Interpretador {
         String[] condTokens = {"(",")","end if","then"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
-        String temp,aux,arr[],eol,str,l_escopo[];
+        String temp,arr[],str;
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
@@ -206,9 +206,11 @@ class Interpretador {
 							System.out.println("Falha na atribuição de valor");
 							return -1;
 						}
-						
+				
+				// Se não é token, nem atribuição de variável.
 				}else{
 					System.out.println("Comando não identificado.");
+					return -1;
 				}
 			}
 		}

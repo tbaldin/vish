@@ -1,20 +1,13 @@
 var R=1
 var j=1
 print "oi"
-print -1
-print -2
 if R==j then
-	var h = 1
-	print 1
-	print 2
+	print "Primeiro if ok"
 	if 2.5==2.5 then
-		print 100
-		print 101
+		print "segundo if ok"
 	end if
 	print 3
 	print 4
 end if
-print 10
-print 11
-print 12
+print "termina"
 while outra coisa
