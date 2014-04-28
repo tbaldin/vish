@@ -9,7 +9,7 @@
 
 class Ula{
 	public String[] math = {"*","/","%","+","-"};
-	public String[] logical = {"==",">","<","<>",">=","<="};
+	public String[] logical = {"==","<=","<>",">=","<",">"};
 
 	public int checkOperation(String part){
 		int i;
@@ -57,15 +57,15 @@ class Ula{
 			case 0:
 				return a==b;
 			case 1:
-				return a>b;
-			case 2:
-				return a<b;
-			case 3:
-				return a!=b;
-			case 4:
-				return a>=b;
-			case 5:
 				return a<=b;
+			case 2:
+				return a!=b;
+			case 3:
+				return a>=b;
+			case 4:
+				return a<b;
+			case 5:
+				return a>b;
 			default: return false;
 		}
 	}

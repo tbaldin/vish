@@ -168,6 +168,7 @@ class Interpretador {
 									System.out.println(str);
 								}else{
 									System.out.println("Fechar as aspas nunca né?");
+									return -1;
 								}
 
 							// Se não for string, é constante ou variável.
@@ -249,7 +250,7 @@ class Interpretador {
 				i++;
 			}
 		}else{
-			System.out.println("Nome de variável inválido.");
+			System.out.println("Nome de variável inválido. ("+name+")");
 			return -2;
 		}
 		return -1;
