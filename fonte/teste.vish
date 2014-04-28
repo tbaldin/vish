@@ -6,7 +6,7 @@ if R==j then
 	var h = 1
 	print 1
 	print 2
-if 2==2 then
+	if 2.5==2 then
 		print 100
 		print 101
 	end if

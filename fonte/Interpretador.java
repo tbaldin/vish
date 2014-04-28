@@ -30,7 +30,7 @@ class Interpretador {
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
 							// linha tirando o IF do inicio, não interessa mais.
-							str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].length()).trim();
+							str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].trim().length()).trim();
 
 							// procura o then no final da linha
 							if(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3])){
@@ -57,7 +57,6 @@ class Interpretador {
 									n=1;
 									//Busca pelo end if do escopo
 									for (k=i+1;this.linhas[k]!=null;k++){
-										//System.out.println("Verifica: "+linhas[k]);
 										if(checkToken(mainTokens,this.linhas[k])==0){
 											n++;
 										}
@@ -178,12 +177,10 @@ class Interpretador {
 	}
 
 	private int checkToken(String[] tokens, String part){
-		//Arrays.asList(tokens).indexOf(part);
 		int i;
 		for(i=0;i<tokens.length;i++){
 			//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"'");
 			if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
-				//System.out.println("Token "+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+" encontrado.");
 				return i;
 			}
 		}
