@@ -250,7 +250,7 @@ class Interpretador {
 				i++;
 			}
 		}else{
-			System.out.println("Nome de variável inválido. ("+name+")");
+			System.out.println("ERRO: Nome de variável inválido. ("+name+")");
 			return -2;
 		}
 		return -1;
