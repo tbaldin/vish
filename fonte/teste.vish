@@ -1,9 +1,19 @@
-var R
+var R=1
 var j=1
+print -1
+print -2
 if R==j then
 	var h = 1
-	var f = 2
 	print 1
+	print 2
+if 2==2 then
+		print 100
+		print 101
+	end if
+	print 3
+	print 4
 end if
-print 2
+print 10
+print 11
+print 12
 while outra coisa

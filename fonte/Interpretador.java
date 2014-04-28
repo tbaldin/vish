@@ -13,7 +13,8 @@ class Interpretador {
 	private Variavel[] vars = new Variavel[1000];
 	private Ula ula = new Ula();
 	public int interpreta(String l[]) {
-        int token,op,v,j,k;
+        int token,op,v,j,k,n;
+        double a,b;
         Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
         String[] condTokens = {"(",")","end if","then"};
@@ -23,13 +24,13 @@ class Interpretador {
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
-            	System.out.println("#"+(i+1)+": '"+linhas[i]+"'");
-				token = checkToken(mainTokens,linhas[i]);
+            	//System.out.println("<"+(i+1)+">");
+				token = checkToken(mainTokens,this.linhas[i]);
 				if(token>=0){
 					switch(token){
 						case 0: // verificação de sintaxe se for condicional
 							// linha tirando o IF do inicio, não interessa mais.
-							str = linhas[i].substring(mainTokens[0].length(),linhas[i].length()).trim();
+							str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].length()).trim();
 
 							// procura o then no final da linha
 							if(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3])){
@@ -51,18 +52,42 @@ class Interpretador {
 									return -1;
 								}
 								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
-								if(this.ula.checkLogicOperation(str)>=0){
-									for (k=i+1;linhas[k]!=null;k++) {
-										if(linhas[k].trim().equals(condTokens[2])){
-											break;
+								op = this.ula.checkLogicOperation(str);
+								if(op>=0){
+									n=1;
+									//Busca pelo end if do escopo
+									for (k=i+1;this.linhas[k]!=null;k++){
+										//System.out.println("Verifica: "+linhas[k]);
+										if(checkToken(mainTokens,this.linhas[k])==0){
+											n++;
 										}
+										if(this.linhas[k].trim().equals(condTokens[2])){
+											n--;
+										}
+										if(n==0) break;
 									}
+
+									//Separa antes e depois da operação
+									arr = str.split("\\"+this.ula.logical[op],2);
+
+									//Busca os valores para a operação lógica
+									if(this.ula.tryParse(arr[0])){
+										a=Double.parseDouble(arr[0]);
+									}else{
+										a=getVarValue(arr[0]);
+									}
+									if (this.ula.tryParse(arr[1])){
+										b=Double.parseDouble(arr[1]);
+									}else{
+										b=getVarValue(arr[1]);
+									}
+
 									// Se o resultado da condição for true
-									if(true){
+									if(this.ula.opLogical(a,b,op)){
 										escopo = new Interpretador();
 										arr = new String[1000];
 										for(j=i+1;j<k;j++){
-											arr[j-i-1]=linhas[j];
+											arr[j-i-1]=this.linhas[j];
 										}
 										escopo.interpreta(arr);
 									}
@@ -81,7 +106,7 @@ class Interpretador {
 								// Verifica se na declaração existe uma atribuição de valor
 
 							// linha tirando o var do inicio, não interessa mais.
-							str = linhas[i].substring(mainTokens[1].length(),linhas[i].length()).trim();
+							str = this.linhas[i].substring(mainTokens[1].length(),this.linhas[i].length()).trim();
 							if(str.contains(varSintax[1])){
 								temp = str.split(varSintax[1],2)[0];
 							}else{
@@ -111,7 +136,7 @@ class Interpretador {
 								}else{
 									this.vars[v] = new Variavel(new String(temp.trim().substring(0,temp.trim().length())));
 								}
-								System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
+								//System.out.println("----- OK. Variável '"+vars[v].nome+"' criada com valor "+vars[v].valor);
 							}else{
 								System.out.println("ERRO: Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
 								return -1;
@@ -121,7 +146,7 @@ class Interpretador {
 							System.out.println("Laço while");
 							break;
 						case 3:
-							arr = linhas[i].split(" ",2);
+							arr = this.linhas[i].split(" ",2);
 							if(this.ula.tryParse(arr[1])){ // Verifica se é um número
 								System.out.println(arr[1].trim());
 							}else{ // Se fo variável testa se existe e imprime seu valor.
@@ -136,8 +161,8 @@ class Interpretador {
 							break;
 						default: break;
 					}
-				}else if(linhas[i].contains(varSintax[1])){
-						arr = linhas[i].split(varSintax[1],2);
+				}else if(this.linhas[i].contains(varSintax[1])){
+						arr = this.linhas[i].split(varSintax[1],2);
 						if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))){
 							System.out.println("Falha na atribuição de valor");
 							return -1;
@@ -148,6 +173,7 @@ class Interpretador {
 				}
 			}
 		}
+		System.out.println("--");
 		return 0;
 	}
 
@@ -155,12 +181,23 @@ class Interpretador {
 		//Arrays.asList(tokens).indexOf(part);
 		int i;
 		for(i=0;i<tokens.length;i++){
-			//System.out.println("----> Compare: "+tokens[i]+" com "+part.substring(0,tokens[i].length()));
-			if(tokens[i].equals(part.trim().substring(0,tokens[i].length()))){
+			//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"'");
+			if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
+				//System.out.println("Token "+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+" encontrado.");
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	private Double getVarValue(String name){
+		//System.out.println("Buscando valor de "+name);
+		int varPos=checkVarExists(name.trim());
+		if(varPos>=0){
+			return this.vars[varPos].valor;
+		}else{
+			return -666.6;
+		}
 	}
 
 	private int checkVarExists(String name){
