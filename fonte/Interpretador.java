@@ -55,15 +55,26 @@ class Interpretador {
 								op = this.ula.checkLogicOperation(str);
 								if(op>=0){
 									n=1;
+									
 									//Busca pelo end if do escopo
 									for (k=i+1;this.linhas[k]!=null;k++){
+										// Se encontrar mais um IF ignora o primeiro end if que encontrar
 										if(checkToken(mainTokens,this.linhas[k])==0){
 											n++;
 										}
+
+										// Quando encontrar um end if diminui n end ifs a encontrar
 										if(this.linhas[k].trim().equals(condTokens[2])){
 											n--;
 										}
+
+										// Se encontrou o end if do escopo sai fora
 										if(n==0) break;
+									}
+
+									if(n>0){
+										System.out.println("if sem end if.");
+										return -1;
 									}
 
 									//Separa antes e depois da operação
@@ -145,23 +156,52 @@ class Interpretador {
 							System.out.println("Laço while");
 							break;
 						case 3:
-							arr = this.linhas[i].split(" ",2);
-							if(this.ula.tryParse(arr[1])){ // Verifica se é um número
-								System.out.println(arr[1].trim());
-							}else{ // Se fo variável testa se existe e imprime seu valor.
-								v = checkVarExists(arr[1].trim().substring(0,arr[1].trim().length()));
-								if(v>=0)
-									System.out.println(this.vars[v].valor);
-								else{ // Se a variável não existe aborta
-									System.out.println("Variável '"+arr[1].trim().substring(0,arr[1].trim().length())+"' não encontrada");
-									return -1;
+							// Remove o token do inicio, não precisa mais.
+							str = this.linhas[i].trim().substring(mainTokens[3].length(),this.linhas[i].trim().length()).trim();
+							
+							// Verifica se tem uma aspa no início, no caso de strings
+							if(str.substring(0,1).equals("\"")){
+
+								// Verifica se existe um fechamento das aspas
+								if(str.substring(str.length()-1,str.length()).equals("\"")){
+									str = str.substring(1,str.length()-1);
+									System.out.println(str);
+								}else{
+									System.out.println("Fechar as aspas nunca né?");
+								}
+
+							// Se não for string, é constante ou variável.
+							}else{
+								
+								//Verifica se é um número
+								if(this.ula.tryParse(str)){
+									System.out.println(str.trim());
+								
+								// Se for variável testa se existe e imprime seu valor.
+								}else{ 
+									v = checkVarExists(str);
+									
+									// Se existe a variável, v a posição no vetor de variáveis.
+									if(v>=0)
+										System.out.println(this.vars[v].valor);
+									else{ // Se a variável não existe aborta
+										System.out.println("Variável '"+str.trim().substring(0,str.trim().length())+"' não encontrada");
+										return -1;
+									}
 								}
 							}
 							break;
 						default: break;
 					}
+
+				// Se não for nenhum dos tokens, é atribuição de valor a uma variável.
+				// Testa se tem o sinal de igualdade
 				}else if(this.linhas[i].contains(varSintax[1])){
+						
+						// Divide em antes e depois da igualdade
 						arr = this.linhas[i].split(varSintax[1],2);
+	
+						//Tenta fazer a atribuição
 						if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))){
 							System.out.println("Falha na atribuição de valor");
 							return -1;
@@ -172,7 +212,6 @@ class Interpretador {
 				}
 			}
 		}
-		System.out.println("--");
 		return 0;
 	}
 
