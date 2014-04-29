@@ -8,22 +8,7 @@
  */
 
 class Ula{
-	public String[] math = {"*","/","%","+","-"};
-	public String[] logical = {"==","<=","<>",">=","<",">"};
-
-	public int checkOperation(String part){
-		int i;
-		for(i=0;i<this.math.length;i++)
-			if(part.contains(this.math[i])) return i;
-		return -1;
-	}
-
-	public int checkLogicOperation(String part){
-		int i;
-		for(i=0;i<this.logical.length;i++)
-			if(part.contains(this.logical[i])) return i;
-		return -1;
-	}
+	public String[] opULA = {"*","/","%","+","-","==","<=","<>",">=","<",">"};
 
 	public boolean tryParse(String number){
 		try{
@@ -34,7 +19,14 @@ class Ula{
 		}
 	}
 
-	public double opMath(double a, double b, int op){
+	public int checkOperation(String part){
+		int i;
+		for(i=0;i<this.opULA.length;i++)
+			if(part.contains(this.opULA[i])) return i;
+		return -1;
+	}
+
+	public double execOP(double a, double b, int op){
 		switch(op){
 			case 0:
 				return a*b;
@@ -47,27 +39,19 @@ class Ula{
 				return a+b;
 			case 4:
 				return a-b;
+			case 5:
+				return (a==b)?1.0:0.0;
+			case 6:
+				return (a<=b)?1.0:0.0;
+			case 7:
+				return (a!=b)?1.0:0.0;
+			case 8:
+				return (a>=b)?1.0:0.0;
+			case 9:
+				return (a<b)?1.0:0.0;
+			case 10:
+				return (a>b)?1.0:0.0;
 			default: return -1.0;
 		}
 	}
-
-	public boolean opLogical(double a, double b, int op){
-		//System.out.println("Condicional: "+a+this.logical[op]+b);
-		switch(op){
-			case 0:
-				return a==b;
-			case 1:
-				return a<=b;
-			case 2:
-				return a!=b;
-			case 3:
-				return a>=b;
-			case 4:
-				return a<b;
-			case 5:
-				return a>b;
-			default: return false;
-		}
-	}
-
 }

@@ -52,8 +52,8 @@ class Interpretador {
 									return -1;
 								}
 								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
-								op = this.ula.checkLogicOperation(str);
-								if(op>=0){
+								op = this.ula.checkOperation(str);
+								if(op>=5){
 									n=1;
 									
 									//Busca pelo end if do escopo
@@ -78,7 +78,7 @@ class Interpretador {
 									}
 
 									//Separa antes e depois da operação
-									arr = str.split("\\"+this.ula.logical[op],2);
+									arr = str.split("\\"+this.ula.opULA[op],2);
 
 									//Busca os valores para a operação lógica
 									if(this.ula.tryParse(arr[0])){
@@ -93,7 +93,7 @@ class Interpretador {
 									}
 
 									// Se o resultado da condição for true
-									if(this.ula.opLogical(a,b,op)){
+									if(this.ula.execOP(a,b,op)==1.0){
 										escopo = new Interpretador();
 										arr = new String[1000];
 										for(j=i+1;j<k;j++){
@@ -272,7 +272,7 @@ class Interpretador {
 			op=this.ula.checkOperation(operacao);
 			
 			// -1 significa que não há operação, neste caso é uma atribuição simples.
-			if(op==-1){
+			if(op==-1||op>4){
 				if(this.ula.tryParse(operacao.trim())){
 					v.valor = Double.parseDouble(operacao.trim());
 				}else{
@@ -282,12 +282,12 @@ class Interpretador {
 			// Atribuição com operação entre dois números
 			}else{
 				// Quebra a operação em um vetor de duas posições: antes e depois do operando
-				arr = operacao.substring(0,operacao.length()).trim().split("\\"+this.ula.math[op],2);
+				arr = operacao.substring(0,operacao.length()).trim().split("\\"+this.ula.opULA[op],2);
 				
 				//Verifica se os dois operandos são números
 				if(this.ula.tryParse(arr[0])&&this.ula.tryParse(arr[1])){
 					// Joga para o valor da variável o retorno do método ULA que recebeu os dois operandos e o número da operação
-					v.valor = this.ula.opMath(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
+					v.valor = this.ula.execOP(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
 				}else{
 					System.out.println("-- Atribuição contendo operação com variáveis. Ainda não implementado");
 				}
