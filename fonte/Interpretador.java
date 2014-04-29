@@ -7,6 +7,7 @@
  * 
  * Por Régis Thiago Feyh <registhiagofeyh@gmail.com>
  */
+
 import java.util.Arrays;
 class Interpretador {
 	private String linhas[];
@@ -14,6 +15,7 @@ class Interpretador {
 	private Ula ula = new Ula();
 	public int interpreta(String l[]) {
         int token,op,v,j,k,n;
+        Variavel var;
         double a,b;
         Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
@@ -83,13 +85,19 @@ class Interpretador {
 									//Busca os valores para a operação lógica
 									if(this.ula.tryParse(arr[0])){
 										a=Double.parseDouble(arr[0]);
+									}else if(getVariable(arr[0])!=null){
+										a=getVariable(arr[0]).valor;
 									}else{
-										a=getVarValue(arr[0]);
+										System.out.println("Não foi possível identificar '"+arr[0]+"'");
+										return -1;
 									}
 									if (this.ula.tryParse(arr[1])){
 										b=Double.parseDouble(arr[1]);
+									}else if(getVariable(arr[1])!=null){
+										b=getVariable(arr[1]).valor;
 									}else{
-										b=getVarValue(arr[1]);
+										System.out.println("Não foi possível identificar '"+arr[1]+"'");
+										return -1;
 									}
 
 									// Se o resultado da condição for true
@@ -124,7 +132,7 @@ class Interpretador {
 							}//temp conterá o nome da variável a ser declarada.
 
 							//Verifica se já existe uma variável com este nome.
-							if(checkVarExists(temp.trim())==-1){
+							if(getVariable(temp)==null){
 								
 								//Busca o próximo espaço livre para guardar a variável
 								v=nextEmptyVar();
@@ -180,11 +188,11 @@ class Interpretador {
 								
 								// Se for variável testa se existe e imprime seu valor.
 								}else{ 
-									v = checkVarExists(str);
+									var = getVariable(str);
 									
 									// Se existe a variável, v a posição no vetor de variáveis.
-									if(v>=0)
-										System.out.println(this.vars[v].valor);
+									if(var!=null)
+										System.out.println(var.valor);
 									else{ // Se a variável não existe aborta
 										System.out.println("Variável '"+str.trim().substring(0,str.trim().length())+"' não encontrada");
 										return -1;
@@ -229,31 +237,20 @@ class Interpretador {
 		return -1;
 	}
 
-	private Double getVarValue(String name){
-		//System.out.println("Buscando valor de "+name);
-		int varPos=checkVarExists(name.trim());
-		if(varPos>=0){
-			return this.vars[varPos].valor;
-		}else{
-			return -666.6;
-		}
-	}
-
-	private int checkVarExists(String name){
+	private Variavel getVariable(String name){
 		int i=0;
 		String permitidos = "abcdefghijklmnopqrstuvxyz_";
 		if(permitidos.contains(name.trim().substring(0,1).toLowerCase())){
 			while(this.vars[i]!=null){
 				if(this.vars[i].igual(name)){
-					return i;
+					return this.vars[i];
 				}
 				i++;
 			}
 		}else{
-			System.out.println("ERRO: Nome de variável inválido. ("+name+")");
-			return -2;
+			return null;
 		}
-		return -1;
+		return null;
 	}
 
 	private int nextEmptyVar(){
@@ -264,10 +261,9 @@ class Interpretador {
 
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
-		int op,varPos=checkVarExists(varName.trim());
-		Variavel v;
-		if(varPos>=0){
-			v=this.vars[varPos];
+		int op;
+		Variavel v=getVariable(varName.trim());
+		if(v!=null){
 			// Verifica se existe uma operação matemática no outro lado da igualdade da String
 			op=this.ula.checkOperation(operacao);
 			
