@@ -17,7 +17,6 @@ class Interpretador {
 
 	public int interpreta(String l[], Variavel[] variaveis) {
         int token,op,v,j,k,n;
-        double a,b;
         Variavel var;
         Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
@@ -27,11 +26,9 @@ class Interpretador {
         String temp,arr[],str;
         this.vars = variaveis;
         this.linhas = l;
-        for(int i = 0; i < this.linhas.length; i++) {
-
+        for(int i=0;i<this.linhas.length;i++) {
         	//Verifica se existe algo na linha
             if(this.linhas[i]!=null&&!this.linhas[i].substring(0,1).equals("'")) {
-            	
             	//Verifica o token no incio da linha
 				token = checkToken(mainTokens,this.linhas[i]);
 				
@@ -173,19 +170,17 @@ class Interpretador {
 							break;
 						default: break;
 					}
-
 				// Se não for nenhum dos tokens, é atribuição de valor a uma variável.
 				// Testa se tem o sinal de igualdade
-				}else if(this.linhas[i].contains(varSintax[1])){
-						
-						// Divide em antes e depois da igualdade
-						arr = this.linhas[i].split(varSintax[1],2);
-	
-						//Tenta fazer a atribuição
-						if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))){
-							System.out.println("Falha na atribuição de valor");
-							return -1;
-						}
+				}else if(this.linhas[i].contains(varSintax[1])){	
+					// Divide em antes e depois da igualdade
+					arr = this.linhas[i].split(varSintax[1],2);
+
+					//Tenta fazer a atribuição
+					if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))){
+						System.out.println("Falha na atribuição de valor");
+						return -1;
+					}
 				// Se não é token, nem atribuição de variável.
 				}else{
 					System.out.println("Cara... o que tu tentou fazer ali na linha '"+(i+1)+"'?");
@@ -199,9 +194,11 @@ class Interpretador {
 	private int checkToken(String[] tokens, String part){
 		int i;
 		for(i=0;i<tokens.length;i++){
-			//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"'");
-			if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
-				return i;
+			if(tokens[i].length()<=part.length()){
+				//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"'");
+				if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
+					return i;
+				}
 			}
 		}
 		return -1;
