@@ -62,7 +62,6 @@ class Interpretador {
 								op = this.ula.checkOperation(str);
 								if(op>=0&&op<=5){
 									n=1;
-									
 									//Busca pelo end if do escopo
 									for (k=i+1;this.linhas[k]!=null;k++){
 										// Se encontrar mais um IF ignora o primeiro end if que encontrar
@@ -194,8 +193,9 @@ class Interpretador {
 	private int checkToken(String[] tokens, String part){
 		int i;
 		for(i=0;i<tokens.length;i++){
-			if(tokens[i].length()<=part.length()){
-				//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"'");
+			if(tokens[i].length()+1<=part.length()){
+				//System.out.println("'"+(tokens[i].length()+1)+"' <= '"+part.length()+"'");
+				//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"': "+tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length())));
 				if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
 					return i;
 				}
