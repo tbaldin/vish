@@ -8,7 +8,7 @@
  */
 
 class Ula{
-	public String[] opULA = {"*","/","%","+","-","==","<=","<>",">=","<",">"};
+	public String[] opULA = {"==","<=","<>",">=","<",">","*","/","%","+","-"};
 
 	// Verifica se é possível converter a String em número.
 	public boolean tryParse(String number){
@@ -81,28 +81,28 @@ class Ula{
 	public double execOP(double a, double b, int op){
 		switch(op){
 			case 0:
-				return a*b;
+				return (a==b)?1.0:0.0;
 			case 1:
+				return (a<=b)?1.0:0.0;
+			case 2:
+				return (a!=b)?1.0:0.0;
+			case 3:
+				return (a>=b)?1.0:0.0;
+			case 4:
+				return (a<b)?1.0:0.0;
+			case 5:
+				return (a>b)?1.0:0.0;
+			case 6:
+				return a*b;
+			case 7:
 				if(b==0.0){System.out.println("Bem vindo ao inferno, aqui você pode dividir por zero."); return -666.6;}
 				return a/a;
-			case 2:
-				return a%b;
-			case 3:
-				return a+b;
-			case 4:
-				return a-b;
-			case 5:
-				return (a==b)?1.0:0.0;
-			case 6:
-				return (a<=b)?1.0:0.0;
-			case 7:
-				return (a!=b)?1.0:0.0;
 			case 8:
-				return (a>=b)?1.0:0.0;
+				return a%b;
 			case 9:
-				return (a<b)?1.0:0.0;
+				return a+b;
 			case 10:
-				return (a>b)?1.0:0.0;
+				return a-b;
 			default: return 0.0;
 		}
 	}

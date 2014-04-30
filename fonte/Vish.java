@@ -16,7 +16,7 @@ class Vish{
 		File f;
         Scanner s;
         Interpretador b;
-        Variavel[] vars = new Variavel[1000];
+        Variavel[] vars = new Variavel[1000]; // Código pode ter, no máximo, 1000 variáveis.
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
         String line;
         

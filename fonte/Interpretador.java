@@ -60,7 +60,7 @@ class Interpretador {
 								}
 								//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
 								op = this.ula.checkOperation(str);
-								if(op>=5){
+								if(op>=0&&op<=5){
 									n=1;
 									
 									//Busca pelo end if do escopo
