@@ -16,6 +16,7 @@ class Vish{
 		File f;
         Scanner s;
         Interpretador b;
+        Variavel[] vars = new Variavel[1000];
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
         
         try{
@@ -36,7 +37,7 @@ class Vish{
             
             // Inicializamos o interpretador com o vetor de linhas. A partir
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.
-            if(b.interpreta(linhas)!=0){
+            if(b.interpreta(linhas,vars)!=0){
                 System.out.println("Houston o macaco não entendou o treinamento! Abortar missão.");
             }
             
