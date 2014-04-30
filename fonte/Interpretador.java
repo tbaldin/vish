@@ -11,8 +11,12 @@
 import java.util.Arrays;
 class Interpretador {
 	private String linhas[];
-	private Variavel[] vars = new Variavel[1000];
-	private Ula ula = new Ula();
+	private Variavel vars[];
+	private Ula ula;
+
+	public Interpretador(){
+		this.ula = new Ula();
+	}
 	
 
 	public int interpreta(String l[], Variavel[] variaveis) {
@@ -190,12 +194,11 @@ class Interpretador {
 		return 0;
 	}
 
+	// REFAZER ESSA FUNÇÃO SE DER BUG NOVAMENTE.
 	private int checkToken(String[] tokens, String part){
 		int i;
 		for(i=0;i<tokens.length;i++){
-			if(tokens[i].length()+1<=part.length()){
-				//System.out.println("'"+(tokens[i].length()+1)+"' <= '"+part.length()+"'");
-				//System.out.println("----> Compare: '"+tokens[i]+"' com '"+part.replaceAll("^\\s+", "").substring(0,tokens[i].length())+"': "+tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length())));
+			if(tokens[i].length()<=part.replaceAll("^\\s+", "").length()){
 				if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
 					return i;
 				}
