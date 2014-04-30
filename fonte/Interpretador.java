@@ -13,16 +13,19 @@ class Interpretador {
 	private String linhas[];
 	private Variavel[] vars = new Variavel[1000];
 	private Ula ula = new Ula();
-	public int interpreta(String l[]) {
+	
+
+	public int interpreta(String l[], Variavel[] variaveis) {
         int token,op,v,j,k,n;
-        Variavel var;
         double a,b;
+        Variavel var;
         Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
         String[] condTokens = {"(",")","end if","then"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
         String temp,arr[],str;
+        this.vars = variaveis;
         this.linhas = l;
         for(int i = 0; i < this.linhas.length; i++) {
             if(this.linhas[i] != null) {
@@ -79,35 +82,14 @@ class Interpretador {
 										return -1;
 									}
 
-									//Separa antes e depois da operação
-									arr = str.split("\\"+this.ula.opULA[op],2);
-
-									//Busca os valores para a operação lógica
-									if(this.ula.tryParse(arr[0])){
-										a=Double.parseDouble(arr[0]);
-									}else if(getVariable(arr[0])!=null){
-										a=getVariable(arr[0]).valor;
-									}else{
-										System.out.println("Não foi possível identificar '"+arr[0]+"'");
-										return -1;
-									}
-									if (this.ula.tryParse(arr[1])){
-										b=Double.parseDouble(arr[1]);
-									}else if(getVariable(arr[1])!=null){
-										b=getVariable(arr[1]).valor;
-									}else{
-										System.out.println("Não foi possível identificar '"+arr[1]+"'");
-										return -1;
-									}
-
-									// Se o resultado da condição for true
-									if(this.ula.execOP(a,b,op)==1.0){
+									// Se o resultado da condição for true, str contém somente o condicional agora
+									if(this.ula.resolveOperacao(str,this)==1.0){
 										escopo = new Interpretador();
 										arr = new String[1000];
 										for(j=i+1;j<k;j++){
 											arr[j-i-1]=this.linhas[j];
 										}
-										escopo.interpreta(arr);
+										escopo.interpreta(arr,this.vars);
 									}
 									i=k;
 								}else{
@@ -188,13 +170,13 @@ class Interpretador {
 								
 								// Se for variável testa se existe e imprime seu valor.
 								}else{ 
-									var = getVariable(str);
+									var=getVariable(str);
 									
 									// Se existe a variável, v a posição no vetor de variáveis.
 									if(var!=null)
 										System.out.println(var.valor);
 									else{ // Se a variável não existe aborta
-										System.out.println("Variável '"+str.trim().substring(0,str.trim().length())+"' não encontrada");
+										System.out.println("Variável '"+str+"' não encontrada");
 										return -1;
 									}
 								}
@@ -237,12 +219,13 @@ class Interpretador {
 		return -1;
 	}
 
-	private Variavel getVariable(String name){
+	public Variavel getVariable(String name){
 		int i=0;
 		String permitidos = "abcdefghijklmnopqrstuvxyz_";
 		if(permitidos.contains(name.trim().substring(0,1).toLowerCase())){
 			while(this.vars[i]!=null){
-				if(this.vars[i].igual(name)){
+				//System.out.println(i+": Verificando '"+name.trim()+"' com '"+this.vars[i].nome+"': "+this.vars[i].igual(name.trim()));
+				if(this.vars[i].igual(name.trim())){
 					return this.vars[i];
 				}
 				i++;
@@ -261,35 +244,16 @@ class Interpretador {
 
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
-		int op;
 		Variavel v=getVariable(varName.trim());
+		Double value;
 		if(v!=null){
-			// Verifica se existe uma operação matemática no outro lado da igualdade da String
-			op=this.ula.checkOperation(operacao);
-			
-			// -1 significa que não há operação, neste caso é uma atribuição simples.
-			if(op==-1||op>4){
-				if(this.ula.tryParse(operacao.trim())){
-					v.valor = Double.parseDouble(operacao.trim());
-				}else{
-					System.out.println("-- Atribuição contendo variável. Ainda não implementado");
-				}
-			
-			// Atribuição com operação entre dois números
+			value = this.ula.resolveOperacao(operacao,this);
+			if(value!=null){
+				v.valor = this.ula.resolveOperacao(operacao,this);
 			}else{
-				// Quebra a operação em um vetor de duas posições: antes e depois do operando
-				arr = operacao.substring(0,operacao.length()).trim().split("\\"+this.ula.opULA[op],2);
-				
-				//Verifica se os dois operandos são números
-				if(this.ula.tryParse(arr[0])&&this.ula.tryParse(arr[1])){
-					// Joga para o valor da variável o retorno do método ULA que recebeu os dois operandos e o número da operação
-					v.valor = this.ula.execOP(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]),op);
-				}else{
-					System.out.println("-- Atribuição contendo operação com variáveis. Ainda não implementado");
-				}
+				return false;
 			}
 		}else{
-			System.out.println("Variável '"+varName+"'' não existe");
 			return false;
 		}
 		return true;

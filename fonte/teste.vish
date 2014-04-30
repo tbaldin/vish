@@ -1,7 +1,8 @@
-var a = 1
-var b = 2
-if a<=b then
-	print "oi"
-	var r = 1+2
-	print r
+var b = 5
+var c = 1
+print b
+var a = j
+if b==a then
+	print "ok"
+	print a
 end if

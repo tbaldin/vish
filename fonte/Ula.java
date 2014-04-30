@@ -10,6 +10,7 @@
 class Ula{
 	public String[] opULA = {"*","/","%","+","-","==","<=","<>",">=","<",">"};
 
+	// Verifica se é possível converter a String em número.
 	public boolean tryParse(String number){
 		try{
 			double a = Double.parseDouble(number);
@@ -19,6 +20,7 @@ class Ula{
 		}
 	}
 
+	// Verifica qual das operações está sendo executada
 	public int checkOperation(String part){
 		int i;
 		for(i=0;i<this.opULA.length;i++)
@@ -26,6 +28,56 @@ class Ula{
 		return -1;
 	}
 
+	// Resolve a operação passada na String. O interpretador é necessário para buscar as variáveis através de seus métodos
+	public Double resolveOperacao(String operacao, Interpretador p){
+		Double a,b;
+		int op = checkOperation(operacao);
+		
+		//Se houver alguma operação matemática
+		if(op!=-1){
+			// Divide os operandos em um vetor de duas posições
+			String arr[] = operacao.split("\\"+this.opULA[op],2);
+			arr[0]=arr[0].trim();
+			arr[1]=arr[1].trim();
+
+			//Busca os valores para a operação
+			if(tryParse(arr[0])){
+				a=Double.parseDouble(arr[0]);
+			}else if(p.getVariable(arr[0])!=null){
+				a=p.getVariable(arr[0]).valor;
+			}else{
+				System.out.println("Não foi possível identificar '"+arr[0]+"'");
+				return 0.0;
+			}
+			if (tryParse(arr[1])){
+				b=Double.parseDouble(arr[1]);
+			}else if(p.getVariable(arr[1])!=null){
+				b=p.getVariable(arr[1]).valor;
+			}else{
+				System.out.println("Não foi possível identificar '"+arr[1]+"'");
+				return 0.0;
+			}
+
+			//Executa a operação que precisa ser realizada e retorna o resultado
+			return execOP(a,b,op);
+		
+		// Se não houver atribuição
+		}else{
+			//Verifica se é número ou variável
+			if(tryParse(operacao)){
+				return Double.parseDouble(operacao);
+			}else{
+				//Verfica se a variável existe ou não
+				if(p.getVariable(operacao)!=null){
+					return p.getVariable(operacao).valor;
+				}else{
+					return null;
+				}
+			}
+		}
+	}
+
+	// Executa a operação lógica ou aritmética
 	public double execOP(double a, double b, int op){
 		switch(op){
 			case 0:
@@ -51,7 +103,7 @@ class Ula{
 				return (a<b)?1.0:0.0;
 			case 10:
 				return (a>b)?1.0:0.0;
-			default: return -1.0;
+			default: return 0.0;
 		}
 	}
 }
