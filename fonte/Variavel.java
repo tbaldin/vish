@@ -15,6 +15,6 @@ class Variavel{
 	}
 
 	public boolean igual(String name){
-		return this.nome.matches(name);
+		return this.nome.equals(name.trim());
 	}
 }
