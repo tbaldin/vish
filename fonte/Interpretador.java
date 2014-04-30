@@ -168,23 +168,7 @@ class Interpretador {
 
 							// Se não for string, é constante ou variável.
 							}else{
-								
-								//Verifica se é um número
-								if(this.ula.tryParse(str)){
-									System.out.println(str.trim());
-								
-								// Se for variável testa se existe e imprime seu valor.
-								}else{ 
-									var=getVariable(str);
-									
-									// Se existe a variável, v a posição no vetor de variáveis.
-									if(var!=null)
-										System.out.println(var.valor);
-									else{ // Se a variável não existe aborta
-										System.out.println("Variável '"+str+"' não encontrada");
-										return -1;
-									}
-								}
+								System.out.println(this.ula.resolveOperacao(str,this));
 							}
 							break;
 						default: break;
@@ -249,14 +233,9 @@ class Interpretador {
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
 		Variavel v=getVariable(varName.trim());
-		Double value;
+		double value;
 		if(v!=null){
-			value = this.ula.resolveOperacao(operacao,this);
-			if(value!=null){
-				v.valor = this.ula.resolveOperacao(operacao,this);
-			}else{
-				return false;
-			}
+			v.valor = this.ula.resolveOperacao(operacao,this);
 		}else{
 			return false;
 		}

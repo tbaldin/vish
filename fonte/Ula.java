@@ -29,8 +29,8 @@ class Ula{
 	}
 
 	// Resolve a operação passada na String. O interpretador é necessário para buscar as variáveis através de seus métodos
-	public Double resolveOperacao(String operacao, Interpretador p){
-		Double a,b;
+	public double resolveOperacao(String operacao, Interpretador p){
+		double a,b;
 		int op = checkOperation(operacao);
 		
 		//Se houver alguma operação matemática
@@ -71,7 +71,7 @@ class Ula{
 				if(p.getVariable(operacao)!=null){
 					return p.getVariable(operacao).valor;
 				}else{
-					return null;
+					return 0.0;
 				}
 			}
 		}
