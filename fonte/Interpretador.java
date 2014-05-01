@@ -80,8 +80,8 @@ class Interpretador {
 									if(checkToken(mainTokens,this.linhas[endL])==0) n++;
 									if(this.linhas[endL].trim().equals(condTokens[2])) n--;
 									
-									// ve se a linha é um else
-									if(n==1&&condTokens[4].length()<=this.linhas[endL].trim().length())
+									//vai atrás do primeiro else
+									if(n==1 && elseL<0 && condTokens[4].length()<=this.linhas[endL].trim().length())
 										if(this.linhas[endL].trim().substring(0,condTokens[4].length()).equals(condTokens[4])) elseL=endL;
 
 									// Se encontrou o end if do escopo sai fora
@@ -110,7 +110,7 @@ class Interpretador {
 									
 									// Se exisita um else if, inclui o end if no escopo
 									if(this.linhas[elseL].length()>0) endL++;
-									
+
 									// prepara as linhas do escopo do else para serem interpretadas
 									for(j=elseL;j<endL;j++){
 										arr[j-i-1]=this.linhas[j];
