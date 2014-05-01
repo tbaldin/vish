@@ -46,6 +46,7 @@ class Ula{
 			}else if(p.getVariable(arr[0])!=null){
 				a=p.getVariable(arr[0]).valor;
 			}else{
+				System.out.println("Dafuq '"+arr[0]+"'?");
 				return 0.88072879; //Valor que determinei para erro.
 			}
 			if (tryParse(arr[1])){
@@ -53,6 +54,7 @@ class Ula{
 			}else if(p.getVariable(arr[1])!=null){
 				b=p.getVariable(arr[1]).valor;
 			}else{
+				System.out.println("Dafuq '"+arr[0]+"'?");
 				return 0.88072879; //Valor que determinei para erro.
 			}
 

@@ -79,15 +79,18 @@ class Interpretador {
 								}
 
 								escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'if'
-								arr = new String[1000];		  // novo vetor de Strings que conterá as linhas do 'if'
+								arr = new String[200];		  // novo vetor de Strings que conterá as linhas do 'if'
 								if(elseL>0) k=elseL;
 								else k=endL;
 								
-								if(this.ula.resolveOperacao(str,this)==1.0){	
+								result = this.ula.resolveOperacao(str,this);
+								if(result==1.0){	
 									// se a condição do 'if' for verdadeira
 									for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 										arr[j-i-1]=this.linhas[j];
-
+								}else if(result==0.88072879){
+									// erro na resolução da expressão
+									return (i+1);
 								}else if(elseL>0){
 									// se a condição do 'if' falhar e houver um 'else'
 									// remove o 'else' do início da linha pro caso de haver um outro 'if' após ele na mesma linha
@@ -138,7 +141,6 @@ class Interpretador {
 								this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
 								
 								if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
-									System.out.println("Falha ao atribuir valor à variável "+this.vars[v].nome);
 									return i+1;
 								}
 							}else{
@@ -172,17 +174,22 @@ class Interpretador {
 							}
 
 							escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'while'
-							arr = new String[1000];		  // novo vetor de Strings que conterá as linhas do 'while'
+							arr = new String[200];		  // novo vetor de Strings que conterá as linhas do 'while'
 							
-							if(this.ula.resolveOperacao(str,this)==1.0){	
+							result = this.ula.resolveOperacao(str,this);
+
+							if(result==1.0){	
 								// se a condição do 'while' for verdadeira
 								for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 									arr[j-i-1]=this.linhas[j];
 								i--; // volta pra linha anterior pra verificar de novo o while
-							}else
+							}else if(result==0.88072879){
+								// erro na resolução da expressão
+								return (i+1);
+							}else{
 								//pula o while
 								i=k+1;
-
+							}
 							ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
 							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
 						}
@@ -281,9 +288,11 @@ class Interpretador {
 			if(value!=0.88072879){ // 0.88072879 é erro de operação
 				v.valor = this.ula.resolveOperacao(operacao,this);
 			}else{
+				System.out.println("Dafuq '"+operacao.trim()+"'?");
 				return false;
 			}
 		}else{
+			System.out.println("Dafuq '"+varName.trim()+"'?");
 			return false;
 		}
 		return true;
