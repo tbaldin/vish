@@ -18,7 +18,6 @@ class Vish{
         Interpretador b;
         Variavel[] vars = new Variavel[1000]; // Código pode ter, no máximo, 1000 variáveis.
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
-        String line;
         int ret;
         
         try{
@@ -33,11 +32,8 @@ class Vish{
             // vetor "linhas". Ignorando linhas vazias.
             int i = 0;
             while(s.hasNext()) {
-                line = s.nextLine();
-                if(!line.trim().equals("")){
-                    linhas[i] = line;
-                    i++;
-                }
+                linhas[i] = s.nextLine();
+                i++;
             }
             
             // Inicializamos o interpretador com o vetor de linhas. A partir

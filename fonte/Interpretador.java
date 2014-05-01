@@ -19,11 +19,11 @@ class Interpretador {
 	}
 	
 	public int interpreta(String l[], Variavel[] variaveis) {
-        int token,op,v,j,k,n,ret,elseL,endL;
+        int token,op,v,j,k,n,ret;
         double result;
         Variavel var;
         Interpretador escopo;
-        String[] mainTokens = {"if","var ","while","print "};
+        String[] mainTokens = {"if","dim ","while","print "};
         String[] condTokens = {"(",")","end if","then","else"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
@@ -31,30 +31,29 @@ class Interpretador {
         this.vars = variaveis;
         this.linhas = l;
         for(int i=0;i<this.linhas.length;i++) {
-    
-        	//Verifica se existe algo na linha
             if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].substring(0,1).equals("'")) {
-    
-            	//Verifica o token no incio da linha
-				token = checkToken(mainTokens,this.linhas[i]);
+    			//Se a linha não for nula ou comentada
+
+				token = checkToken(mainTokens,this.linhas[i]);//Verifica o token no incio da linha
 				
 				switch(token){
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 0: // CONDICIONAL
+						
 						// str = Linha atual tirando o 'if' já identificado do inicio
 						str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].trim().length()).trim();
 
-						// Procura o 'then' no final da linha
 						if(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3])){
-							
+							// Se tem o 'then' no final da linha	
+
 							// str = linha atual sem o 'if' do início e sem o 'then' já identificado no final
 							str = str.substring(0,str.length()-condTokens[3].length()).trim();
 							
-							// Verifica se inicia e termina com parenteses
 							if(str.substring(0,1).equals(condTokens[0])){
+								// se inicia com parenteses
 								if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
-									// str = condição sem os parenteses, não preciso deles
-									str = str.substring(1,str.length()-1);
+									// se termina com parenteses
+									str = str.substring(1,str.length()-1); // str = condição sem os parenteses, não preciso deles
 								}else{
 									System.out.println("Parenteses aberto sem fechamento. Que vergonha hein.");
 									return i+1;
@@ -64,64 +63,59 @@ class Interpretador {
 								return i+1;
 							}
 
-							//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
-							op = this.ula.checkOperation(str);
+							op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
 
-							// Verifica se o operador encontrado é um condicional
 							if(op>=0&&op<=5){
-								n=1; // n é o número de 'end if' a encontrar 
+								// se é uma operação condicional
+								n=1; // n é a quantidade de 'end if' a encontrar 
 								
-								elseL=-1; // elseL é a linha do else se houver
-										  // endL  é a linha do end if
+								int elseL=-1; // elseL é a linha do 'else' se houver
+								int endL;	  // endL  é a linha do 'end if', precisa existir
 								
-								//Busca pelo end if do escopo
 								for (endL=i+1;this.linhas[endL]!=null;endL++){
-									// Se encontrar mais um 'if' ignora o primeiro 'end if' que encontrar
-									if(checkToken(mainTokens,this.linhas[endL])==0) n++;
-									if(this.linhas[endL].trim().equals(condTokens[2])) n--;
+									// for primeira linha do escopo até o final do arquivo
+
+									if(checkToken(mainTokens,this.linhas[endL])==0) n++; // se encontrar mais um if, ignora o próximo end if
+									if(this.linhas[endL].trim().equals(condTokens[2])) n--; // se encontrar um end if, diminui o contador
 									
-									//vai atrás do primeiro else
 									if(n==1 && elseL<0 && condTokens[4].length()<=this.linhas[endL].trim().length())
+										// se está no escopo do if em questão e ainda não encontrou um else, procura por um.
 										if(this.linhas[endL].trim().substring(0,condTokens[4].length()).equals(condTokens[4])) elseL=endL;
 
-									// Se encontrou o end if do escopo sai fora
-									if(n==0) break;
+									if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 								}
 
 								if(n>0){
+									// Foi até o final do arquivo e não achou o end if do if
 									System.out.println("Cara, se tu abriu um 'if' tu tem que especificar um 'end if', como vou adivinhar onde termina?");
 									return i+1;
 								}
 
-								// Se o resultado da condição for true, str contém somente o condicional agora
-								escopo = new Interpretador();
-								arr = new String[1000];
+								escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'if'
+								arr = new String[1000];		  // novo vetor de Strings que conterá as linhas do 'if'
 								if(elseL>0) k=elseL;
 								else k=endL;
+								
 								if(this.ula.resolveOperacao(str,this)==1.0){	
-									
-									// prepara as linhas do escopo para serem interpretadas
-									for(j=i+1;j<k;j++){
+									// se a condição do 'if' for verdadeira
+									for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 										arr[j-i-1]=this.linhas[j];
-									}	
+
 								}else if(elseL>0){
-									// Remove o else do início da linha pro caso de haver um outro if após ele na mesma linha
+									// se a condição do 'if' falhar e houver um 'else'
+									// remove o 'else' do início da linha pro caso de haver um outro 'if' após ele na mesma linha
 									this.linhas[elseL]=this.linhas[elseL].trim().substring(condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
 									
-									// Se exisita um else if, inclui o end if no escopo
-									if(this.linhas[elseL].length()>0) endL++;
+									if(this.linhas[elseL].length()>0) endL++; // Se existir algo a mais que o else na linha inclui o 'end if' no escopo
 
-									// prepara as linhas do escopo do else para serem interpretadas
-									for(j=elseL;j<endL;j++){
+									for(j=elseL;j<endL;j++) // prepara as linhas do escopo do else para serem interpretadas
 										arr[j-i-1]=this.linhas[j];
-									}
 								}
 
-								// manda executar o escopo
-								ret = escopo.interpreta(arr,this.vars);
-								if(ret!=0) return ret+i+1; //Se houve um erro na execução do escopo
+								ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
+								if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
 								
-								i=endL; // Continua a execução do escopo atual a partir do end if
+								i=endL; // Continua a execução do escopo atual a partir da linha do 'end if'
 							}else{
 								System.out.println("Condicional IF sem condição. Você é uma piada hein!");
 								return i+1;
@@ -138,29 +132,24 @@ class Interpretador {
 						str = this.linhas[i].substring(mainTokens[1].length(),this.linhas[i].length()).trim();
 
 						if(str.contains(varSintax[1])){
-							// Nome da variável se for declaração de variável com atribuição
+							// nome da variável se for declaração de variável com atribuição
 							temp = str.split(varSintax[1],2)[0];
 						}else{
-							// Nome da variável se for declaração de variável sem atribuição
+							// nome da variável se for declaração de variável sem atribuição
 							temp = str;
 						}
 
-						//Verifica se não existe uma variável com este nome
 						if(getVariable(temp)==null){
+							// se não existe essa variável
 							
-							//Busca o próximo espaço livre para guardar a variável
-							v=nextEmptyVar();
+							v=nextEmptyVar(); // próxima posição livre no vetor de variáveis
 
-							//Verifica novamente se irá exisitir uma atribuição de valor
 							if(str.contains(varSintax[1])){
-
-								// Divide a String em um vetor de duas posições: antes e depois da igualdade
-								arr = str.split(varSintax[1],2);
+								// se existe uma atribuição de valor
+								arr = str.split(varSintax[1],2); // divide str em um vetor de duas posições: antes e depois da igualdade
 								
-								// Cria uma variável com o nome localizado antes da igualdade
-								this.vars[v] = new Variavel(arr[0]);
+								this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
 								
-								// metodo para atribuição de valores
 								if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
 									System.out.println("Falha ao atribuir valor à variável "+this.vars[v].nome);
 									return i+1;
@@ -183,22 +172,22 @@ class Interpretador {
 						// Remove o token do inicio, não precisa mais.
 						str = this.linhas[i].trim().substring(mainTokens[3].length(),this.linhas[i].trim().length()).trim();
 						
-						// Verifica se tem uma aspa no início, no caso de strings
 						if(str.substring(0,1).equals("\"")){
-
-							// Verifica se existe um fechamento das aspas
+							// se é pra imprimir uma string
 							if(str.substring(str.length()-1,str.length()).equals("\"")){
+								// se as aspas foram fechadas corretamente
 								str = str.substring(1,str.length()-1);
-								System.out.println(str);
+								System.out.println(str); // imprime o valor dentro das aspas
 							}else{
 								System.out.println("Fechar as aspas nunca né?");
 								return i+1;
 							}
 
-						// Se não for string, é constante ou variável.
 						}else{
-							result = this.ula.resolveOperacao(str,this);
+							// se é pra imprimir um valor
+							result = this.ula.resolveOperacao(str,this); // resolve a expressão
 							if(result!=0.88072879){
+								// se conseguiu resolver a expressão
 								System.out.println(result);
 							}else{
 								System.out.println("Hã? O quê? Dafuq '"+str+"'?!");
@@ -208,15 +197,13 @@ class Interpretador {
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					default:  // SE NÃO FOR TOKEN
-						// Verifica se há uma atribuição
-						if(this.linhas[i].contains(varSintax[1])){	
-							// Divide em antes e depois da igualdade
-							arr = this.linhas[i].split(varSintax[1],2);
+						if(this.linhas[i].contains(varSintax[1])){
+							// se há um sinal de igualdade indicando atribuição
+							arr = this.linhas[i].split(varSintax[1],2); // divide em antes e depois da igualdade
 
-							//Tenta fazer a atribuição
-							if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))) return i+1;
-						// Se não é token, nem atribuição de variável.
+							if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))) return i+1; // se não conseguiu fazer a atribuição
 						}else{
+							// Se não é nada conhecido
 							System.out.println("Cara... o que tu tentou fazer?");
 							return i+1;
 						}
@@ -224,7 +211,7 @@ class Interpretador {
 				}
 			}
 		}
-		return 0;
+		return 0; // tudo ok.
 	}
 
 	// Método que verifica o que a linha atual deve fazer
