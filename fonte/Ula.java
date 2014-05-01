@@ -47,7 +47,7 @@ class Ula{
 				a=p.getVariable(arr[0]).valor;
 			}else{
 				System.out.println("Não foi possível identificar '"+arr[0]+"'");
-				return 0.0;
+				return 0.88072879; //Valor que determinei para erro.
 			}
 			if (tryParse(arr[1])){
 				b=Double.parseDouble(arr[1]);
@@ -55,7 +55,7 @@ class Ula{
 				b=p.getVariable(arr[1]).valor;
 			}else{
 				System.out.println("Não foi possível identificar '"+arr[1]+"'");
-				return 0.0;
+				return 0.88072879; //Valor que determinei para erro.
 			}
 
 			//Executa a operação que precisa ser realizada e retorna o resultado
@@ -71,7 +71,7 @@ class Ula{
 				if(p.getVariable(operacao)!=null){
 					return p.getVariable(operacao).valor;
 				}else{
-					return 0.0;
+					return 0.88072879; //Valor que determinei para erro.
 				}
 			}
 		}

@@ -29,7 +29,7 @@ class Vish{
             b = new Interpretador();
             
             // Lemos todas as linhas do arquivo para dentro do
-            // vetor "linhas".
+            // vetor "linhas". Ignorando linhas vazias.
             int i = 0;
             while(s.hasNext()) {
                 line = s.nextLine();
@@ -43,8 +43,7 @@ class Vish{
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.
             if(b.interpreta(linhas,vars)!=0){
                 System.out.println("Houston o macaco não entendou o treinamento! Abortar missão.");
-            }
-            
+            }            
         }catch (Exception e){
             System.out.println("Vish... não entendi o arquivo: " + (args.length > 0 ? args[0] : "(desconhecido)"));
             System.out.println("Uso:");
