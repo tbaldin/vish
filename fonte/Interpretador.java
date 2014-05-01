@@ -33,7 +33,7 @@ class Interpretador {
         for(int i=0;i<this.linhas.length;i++) {
     
         	//Verifica se existe algo na linha
-            if(this.linhas[i]!=null&&!this.linhas[i].substring(0,1).equals("'")) {
+            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].substring(0,1).equals("'")) {
     
             	//Verifica o token no incio da linha
 				token = checkToken(mainTokens,this.linhas[i]);
@@ -80,7 +80,7 @@ class Interpretador {
 									if(checkToken(mainTokens,this.linhas[endL])==0) n++;
 									if(this.linhas[endL].trim().equals(condTokens[2])) n--;
 									
-									// procura se é um else
+									// ve se a linha é um else
 									if(n==1&&condTokens[4].length()<=this.linhas[endL].trim().length())
 										if(this.linhas[endL].trim().substring(0,condTokens[4].length()).equals(condTokens[4])) elseL=endL;
 
@@ -99,13 +99,19 @@ class Interpretador {
 								if(elseL>0) k=elseL;
 								else k=endL;
 								if(this.ula.resolveOperacao(str,this)==1.0){	
+									
+									// prepara as linhas do escopo para serem interpretadas
 									for(j=i+1;j<k;j++){
 										arr[j-i-1]=this.linhas[j];
 									}	
 								}else if(elseL>0){
 									// Remove o else do início da linha pro caso de haver um outro if após ele na mesma linha
 									this.linhas[elseL]=this.linhas[elseL].trim().substring(condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
-									if(this.linhas[elseL].length()==0) elseL++; // Se não houver mais nada quando remover o if, pula a linha
+									
+									// Se exisita um else if, inclui o end if no escopo
+									if(this.linhas[elseL].length()>0) endL++;
+									
+									// prepara as linhas do escopo do else para serem interpretadas
 									for(j=elseL;j<endL;j++){
 										arr[j-i-1]=this.linhas[j];
 									}
