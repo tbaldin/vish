@@ -12,6 +12,7 @@ import java.util.Arrays;
 class Interpretador {
 	private String linhas[];
 	private Variavel vars[];
+	private String[] condTokens = {"(",")","end if","then","else","wend"};
 	private Ula ula;
 
 	public Interpretador(){
@@ -24,14 +25,13 @@ class Interpretador {
         Variavel var;
         Interpretador escopo;
         String[] mainTokens = {"if","dim ","while","print "};
-        String[] condTokens = {"(",")","end if","then","else"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
         String temp,arr[],str;
         this.vars = variaveis;
         this.linhas = l;
         for(int i=0;i<this.linhas.length;i++) {
-            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].substring(0,1).equals("'")) {
+            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")) {
     			//Se a linha não for nula ou comentada
 
 				token = checkToken(mainTokens,this.linhas[i]);//Verifica o token no incio da linha
@@ -43,25 +43,13 @@ class Interpretador {
 						// str = Linha atual tirando o 'if' já identificado do inicio
 						str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].trim().length()).trim();
 
-						if(str.substring(str.length()-condTokens[3].length(),str.length()).equals(condTokens[3])){
+						if(str.substring(str.length()-this.condTokens[3].length(),str.length()).equals(this.condTokens[3])){
 							// Se tem o 'then' no final da linha	
 
-							// str = linha atual sem o 'if' do início e sem o 'then' já identificado no final
-							str = str.substring(0,str.length()-condTokens[3].length()).trim();
+							// str = linha atual sem o 'if' do início e sem o 'then' já identificado no final e sem os parenteses se existiam
+							str = removeParenteses(str.substring(0,str.length()-this.condTokens[3].length()).trim());
 							
-							if(str.substring(0,1).equals(condTokens[0])){
-								// se inicia com parenteses
-								if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
-									// se termina com parenteses
-									str = str.substring(1,str.length()-1); // str = condição sem os parenteses, não preciso deles
-								}else{
-									System.out.println("Parenteses aberto sem fechamento. Que vergonha hein.");
-									return i+1;
-								}
-							}else if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
-								System.out.println("E o inicio desse parenteses aberto, enfio onde?");
-								return i+1;
-							}
+							if(str==null) return i+1;
 
 							op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
 
@@ -74,13 +62,12 @@ class Interpretador {
 								
 								for (endL=i+1;this.linhas[endL]!=null;endL++){
 									// for primeira linha do escopo até o final do arquivo
-
 									if(checkToken(mainTokens,this.linhas[endL])==0) n++; // se encontrar mais um if, ignora o próximo end if
-									if(this.linhas[endL].trim().equals(condTokens[2])) n--; // se encontrar um end if, diminui o contador
+									if(this.linhas[endL].trim().equals(this.condTokens[2])) n--; // se encontrar um end if, diminui o contador
 									
-									if(n==1 && elseL<0 && condTokens[4].length()<=this.linhas[endL].trim().length())
+									if(n==1 && elseL<0 && this.condTokens[4].length()<=this.linhas[endL].trim().length())
 										// se está no escopo do if em questão e ainda não encontrou um else, procura por um.
-										if(this.linhas[endL].trim().substring(0,condTokens[4].length()).equals(condTokens[4])) elseL=endL;
+										if(this.linhas[endL].trim().substring(0,this.condTokens[4].length()).equals(this.condTokens[4])) elseL=endL;
 
 									if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 								}
@@ -104,7 +91,7 @@ class Interpretador {
 								}else if(elseL>0){
 									// se a condição do 'if' falhar e houver um 'else'
 									// remove o 'else' do início da linha pro caso de haver um outro 'if' após ele na mesma linha
-									this.linhas[elseL]=this.linhas[elseL].trim().substring(condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
+									this.linhas[elseL]=this.linhas[elseL].trim().substring(this.condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
 									
 									if(this.linhas[elseL].length()>0) endL++; // Se existir algo a mais que o else na linha inclui o 'end if' no escopo
 
@@ -165,7 +152,40 @@ class Interpretador {
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\			
 					case 2: // LAÇO WHILE
-						System.out.println("Laço while");
+						// tira o while do inicio e os parenteses se existirem, fica só a condição
+						str = removeParenteses(linhas[i].trim().substring(mainTokens[2].length(),linhas[i].trim().length()).trim());
+
+						//System.out.println("WHILE: "+str);
+						op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
+
+						if(op>=0&&op<=5){
+							// se é uma operação condicional
+							for (k=i+1;this.linhas[k]!=null;k++){
+								// for primeira linha do escopo até o final do arquivo
+								if(this.linhas[k].trim().equals(this.condTokens[5])) break; // se encontrar um 'wend', sai fora
+							}
+
+							if(!this.linhas[k].trim().equals(this.condTokens[5])){
+								// Foi até o final do arquivo e não achou o end if do if
+								System.out.println("Cara, se tu abriu um 'while' tu tem que especificar um 'wend', como vou adivinhar onde termina?");
+								return i+1;
+							}
+
+							escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'while'
+							arr = new String[1000];		  // novo vetor de Strings que conterá as linhas do 'while'
+							
+							if(this.ula.resolveOperacao(str,this)==1.0){	
+								// se a condição do 'while' for verdadeira
+								for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
+									arr[j-i-1]=this.linhas[j];
+								i--; // volta pra linha anterior pra verificar de novo o while
+							}else
+								//pula o while
+								i=k+1;
+
+							ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
+							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
+						}
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 3: // IMPRESSÃO NA TELA
@@ -267,5 +287,23 @@ class Interpretador {
 			return false;
 		}
 		return true;
+	}
+
+	// Checa e remove os parenteses dos condicionais
+	private String removeParenteses(String str){
+		if(str.substring(0,1).equals(this.condTokens[0])){
+			// se inicia com parenteses
+			if(str.substring(str.length()-this.condTokens[1].length(),str.length()).equals(this.condTokens[1])){
+				// se termina com parenteses
+				return str.substring(1,str.length()-1); // str = condição sem os parenteses, não preciso deles
+			}else{
+				System.out.println("Parenteses aberto sem fechamento. Que vergonha hein.");
+				return null;
+			}
+		}else if(str.substring(str.length()-this.condTokens[1].length(),str.length()).equals(this.condTokens[1])){
+			System.out.println("E o inicio desse parenteses aberto, enfio onde?");
+			return null;
+		}
+		return str; // se não tinha parenteses
 	}
 }

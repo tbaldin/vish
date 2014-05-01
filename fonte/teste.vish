@@ -1,19 +1,24 @@
-print "oi"
-dim a
-dim b = 2
-a = 0
-if a==0 then
-	a = 5/2
-	print a
-	if a <= 1 then 
-		a = a+1
-		print a
-	elseif (a > 1) then
-		a = b+1.2
-		print a
-	else
+'print "oi"
+'dim a
+'dim b = 2
+'a = 0
+'if a==0 then
+	'a = 5/2
+	'print a
+	'if a <= 1 then 
+'		a = a+1
+'		print a
+'	elseif (a > 1) then
+'		a = b+1.2
+'		print a
+'	else
 		print "ihuuu!"
-	end if
-else
-	print "tchau"
-end if
+'	end if
+'else
+'	print "tchau"
+'end if
+dim j=0
+while j<5
+	print j
+	j = j+1
+wend
