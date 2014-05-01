@@ -19,6 +19,7 @@ class Vish{
         Variavel[] vars = new Variavel[1000]; // Código pode ter, no máximo, 1000 variáveis.
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
         String line;
+        int ret;
         
         try{
             // Referencia o arquivo. args[0] conterá os dados passados pela linha de comando.
@@ -41,8 +42,9 @@ class Vish{
             
             // Inicializamos o interpretador com o vetor de linhas. A partir
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.
-            if(b.interpreta(linhas,vars)!=0){
-                System.out.println("Houston o macaco não entendou o treinamento! Abortar missão.");
+            ret = b.interpreta(linhas,vars);
+            if(ret!=0){
+                System.out.println("Houston we have a problem na Linha '"+ret+"'. Abortar missão.");
             }            
         }catch (Exception e){
             System.out.println("Vish... não entendi o arquivo: " + (args.length > 0 ? args[0] : "(desconhecido)"));

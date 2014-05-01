@@ -19,11 +19,12 @@ class Interpretador {
 	}
 	
 	public int interpreta(String l[], Variavel[] variaveis) {
-        int token,op,v,j,k,n;
+        int token,op,v,j,k,n,ret;
+        double result;
         Variavel var;
         Interpretador escopo;
         String[] mainTokens = {"if","var ","while","print "};
-        String[] condTokens = {"(",")","end if","then"};
+        String[] condTokens = {"(",")","end if","then","else"};
     	String[] endOfLines = {"{","}"};
     	String[] varSintax = {";","="};
         String temp,arr[],str;
@@ -56,11 +57,11 @@ class Interpretador {
 									str = str.substring(1,str.length()-1);
 								}else{
 									System.out.println("Parenteses aberto sem fechamento. Que vergonha hein.");
-									return -1;
+									return i+1;
 								}
 							}else if(str.substring(str.length()-condTokens[1].length(),str.length()).equals(condTokens[1])){
 								System.out.println("E o inicio desse parenteses aberto, enfio onde?");
-								return -1;
+								return i+1;
 							}
 
 							//Agora claro, verifica se de fato existe um verificador pra condição na expressão.
@@ -74,14 +75,13 @@ class Interpretador {
 									// Se encontrar mais um 'if' ignora o primeiro 'end if' que encontrar
 									if(checkToken(mainTokens,this.linhas[k])==0) n++;
 									if(this.linhas[k].trim().equals(condTokens[2])) n--;
-
 									// Se encontrou o end if do escopo sai fora
 									if(n==0) break;
 								}
 
 								if(n>0){
 									System.out.println("Cara, se tu abriu um 'if' tu tem que especificar um 'end if', como vou adivinhar onde termina?");
-									return -1;
+									return i+1;
 								}
 
 								// Se o resultado da condição for true, str contém somente o condicional agora
@@ -91,17 +91,18 @@ class Interpretador {
 									for(j=i+1;j<k;j++){
 										arr[j-i-1]=this.linhas[j];
 									}
-									if(escopo.interpreta(arr,this.vars)<0) return -1;
+									ret = escopo.interpreta(arr,this.vars);
+									if(ret!=0) return ret+i+1;
 								}
 								i=k;
 							}else{
 								System.out.println("Condicional IF sem condição. Você é uma piada hein!");
-								return -1;
+								return i+1;
 							}
 					
 						}else{
 							System.out.println("A sintaxe do condicional é: 'if(<condicao>) then'. Entendeu agora fera?");
-							return -1;
+							return i+1;
 						}
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
@@ -135,7 +136,7 @@ class Interpretador {
 								// metodo para atribuição de valores
 								if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
 									System.out.println("Falha ao atribuir valor à variável "+this.vars[v].nome);
-									return -1;
+									return i+1;
 								}
 							}else{
 								// Se é uma declaração simples sem atribuição de valor só cria a variável com o nome.
@@ -143,7 +144,7 @@ class Interpretador {
 							}
 						}else{
 							System.out.println("Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
-							return -1;
+							return i+1;
 						}
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\			
@@ -164,12 +165,18 @@ class Interpretador {
 								System.out.println(str);
 							}else{
 								System.out.println("Fechar as aspas nunca né?");
-								return -1;
+								return i+1;
 							}
 
 						// Se não for string, é constante ou variável.
 						}else{
-							System.out.println(this.ula.resolveOperacao(str,this));
+							result = this.ula.resolveOperacao(str,this);
+							if(result!=0.88072879){
+								System.out.println(result);
+							}else{
+								System.out.println("Hã? O quê? Dafuq '"+str+"'?!");
+								return i+1;
+							}
 						}
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
@@ -180,11 +187,11 @@ class Interpretador {
 							arr = this.linhas[i].split(varSintax[1],2);
 
 							//Tenta fazer a atribuição
-							if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))) return -1;
+							if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))) return i+1;
 						// Se não é token, nem atribuição de variável.
 						}else{
 							System.out.println("Cara... o que tu tentou fazer?");
-							return -1;
+							return i+1;
 						}
 						break;
 				}

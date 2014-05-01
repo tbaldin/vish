@@ -46,7 +46,6 @@ class Ula{
 			}else if(p.getVariable(arr[0])!=null){
 				a=p.getVariable(arr[0]).valor;
 			}else{
-				System.out.println("Não foi possível identificar '"+arr[0]+"'");
 				return 0.88072879; //Valor que determinei para erro.
 			}
 			if (tryParse(arr[1])){
@@ -54,7 +53,6 @@ class Ula{
 			}else if(p.getVariable(arr[1])!=null){
 				b=p.getVariable(arr[1]).valor;
 			}else{
-				System.out.println("Não foi possível identificar '"+arr[1]+"'");
 				return 0.88072879; //Valor que determinei para erro.
 			}
 
@@ -95,8 +93,8 @@ class Ula{
 			case 6:
 				return a*b;
 			case 7:
-				if(b==0.0){System.out.println("Bem vindo ao inferno, aqui você pode dividir por zero."); return -666.6;}
-				return a/a;
+				if(b==0.0){System.out.println("Bem vindo ao inferno, aqui você pode dividir por zero."); return 0.88072879;}
+				return a/b;
 			case 8:
 				return a%b;
 			case 9:
