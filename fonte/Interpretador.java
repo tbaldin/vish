@@ -19,7 +19,7 @@ class Interpretador {
 	}
 	
 	public int interpreta(String l[], Variavel[] variaveis) {
-        int token,op,v,j,k,n,ret;
+        int token,op,v,j,k,n,ret,elseL,endL;
         double result;
         Variavel var;
         Interpretador escopo;
@@ -70,11 +70,20 @@ class Interpretador {
 							// Verifica se o operador encontrado é um condicional
 							if(op>=0&&op<=5){
 								n=1; // n é o número de 'end if' a encontrar 
+								
+								elseL=-1; // elseL é a linha do else se houver
+										  // endL  é a linha do end if
+								
 								//Busca pelo end if do escopo
-								for (k=i+1;this.linhas[k]!=null;k++){
+								for (endL=i+1;this.linhas[endL]!=null;endL++){
 									// Se encontrar mais um 'if' ignora o primeiro 'end if' que encontrar
-									if(checkToken(mainTokens,this.linhas[k])==0) n++;
-									if(this.linhas[k].trim().equals(condTokens[2])) n--;
+									if(checkToken(mainTokens,this.linhas[endL])==0) n++;
+									if(this.linhas[endL].trim().equals(condTokens[2])) n--;
+									
+									// procura se é um else
+									if(n==1&&condTokens[4].length()<=this.linhas[endL].trim().length())
+										if(this.linhas[endL].trim().substring(0,condTokens[4].length()).equals(condTokens[4])) elseL=endL;
+
 									// Se encontrou o end if do escopo sai fora
 									if(n==0) break;
 								}
@@ -85,16 +94,28 @@ class Interpretador {
 								}
 
 								// Se o resultado da condição for true, str contém somente o condicional agora
-								if(this.ula.resolveOperacao(str,this)==1.0){
-									escopo = new Interpretador();
-									arr = new String[1000];
+								escopo = new Interpretador();
+								arr = new String[1000];
+								if(elseL>0) k=elseL;
+								else k=endL;
+								if(this.ula.resolveOperacao(str,this)==1.0){	
 									for(j=i+1;j<k;j++){
 										arr[j-i-1]=this.linhas[j];
+									}	
+								}else if(elseL>0){
+									// Remove o else do início da linha pro caso de haver um outro if após ele na mesma linha
+									this.linhas[elseL]=this.linhas[elseL].trim().substring(condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
+									if(this.linhas[elseL].length()==0) elseL++; // Se não houver mais nada quando remover o if, pula a linha
+									for(j=elseL;j<endL;j++){
+										arr[j-i-1]=this.linhas[j];
 									}
-									ret = escopo.interpreta(arr,this.vars);
-									if(ret!=0) return ret+i+1;
 								}
-								i=k;
+
+								// manda executar o escopo
+								ret = escopo.interpreta(arr,this.vars);
+								if(ret!=0) return ret+i+1; //Se houve um erro na execução do escopo
+								
+								i=endL; // Continua a execução do escopo atual a partir do end if
 							}else{
 								System.out.println("Condicional IF sem condição. Você é uma piada hein!");
 								return i+1;
