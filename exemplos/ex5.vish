@@ -1,0 +1,7 @@
+dim a = 1
+
+if a > 0 then
+	print "maior"
+else
+	print "menor"
+end if

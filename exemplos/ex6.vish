@@ -1,0 +1,20 @@
+dim i = 0
+dim j = i+3
+
+while (i<3)
+	if (i==0) then
+		print "Zero"
+	else
+		print "Outro"
+	end if
+	i = i+1
+wend
+
+if j==3 then
+	j=i-3
+	if j==0 then
+		print "OK"
+	else
+		print "Erro"
+	end if
+end if
