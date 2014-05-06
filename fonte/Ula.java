@@ -27,9 +27,9 @@ class Ula{
 	}
 
 	// Resolve a operação passada na String. O interpretador é necessário para buscar as variáveis através de seus métodos
-	public RetornoUla resolveOperacao(String operacao, Interpretador p){
+	public RetornoOperacao resolveOperacao(String operacao, Interpretador p){
 		double a,b;
-		RetornoUla retorno = new RetornoUla();
+		RetornoOperacao retorno = new RetornoOperacao();
 		int op = checkOperation(operacao);
 		
 		//Se houver alguma operação matemática
@@ -59,12 +59,12 @@ class Ula{
 				return retorno;
 			}
 
-			//Executa a operação que precisa ser realizada e retorna o resultado
 			if(op==7&&b==0){ // divisão por zero
 				retorno.error = 666;
 				return retorno;
 			}
 
+			//Executa a operação que precisa ser realizada e retorna o resultado, aqui é garantido que os valores são válidos.
 			retorno.success = true;
 			retorno.result = execOP(a,b,op);
 			return retorno;

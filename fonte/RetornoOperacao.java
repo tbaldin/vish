@@ -1,10 +1,10 @@
-class RetornoUla{
+class RetornoOperacao{
 	public double result;
 	public boolean success;
 	public int error;
 	public String compl;
 
-	public RetornoUla(){
+	public RetornoOperacao(){
 		result = 0.0;
 		success = false;
 		error = 0;

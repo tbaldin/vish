@@ -7,6 +7,7 @@
  */
 
 import java.util.Arrays;
+import java.util.Scanner;
 class Interpretador {
 	private String linhas[];
 	private Variavel vars[];
@@ -20,7 +21,7 @@ class Interpretador {
         int token,op,v,j,k,n,ret;
         double result;
         Variavel var;
-        RetornoUla retorno;
+        RetornoOperacao retorno;
         Interpretador escopo;
         String temp,arr[],str;
         this.vars = variaveis;
@@ -220,7 +221,9 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 4: // ENTRADA DE DADOS
 						str = removeToken(this.linhas[i],4);
-
+						System.out.println("Scan para: '"+str+"'");
+						Scanner value = new Scanner(System.in);
+						
 
 					break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
@@ -282,7 +285,7 @@ class Interpretador {
 	// Método para executar a atribuição da operação na variável com o nome passado
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
-		RetornoUla retorno;
+		RetornoOperacao retorno;
 		Variavel v=getVariable(varName.trim());
 		double value;
 		if(v!=null){

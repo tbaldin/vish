@@ -1,6 +1,7 @@
 print "oi"
 dim a
 dim j
+scan j
 dim b = 2
 a = j
 if a==0 then
