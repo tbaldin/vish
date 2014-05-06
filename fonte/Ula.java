@@ -27,8 +27,9 @@ class Ula{
 	}
 
 	// Resolve a operação passada na String. O interpretador é necessário para buscar as variáveis através de seus métodos
-	public double resolveOperacao(String operacao, Interpretador p){
+	public RetornoUla resolveOperacao(String operacao, Interpretador p){
 		double a,b;
+		RetornoUla retorno = new RetornoUla();
 		int op = checkOperation(operacao);
 		
 		//Se houver alguma operação matemática
@@ -44,32 +45,46 @@ class Ula{
 			}else if(p.getVariable(arr[0])!=null){
 				a=p.getVariable(arr[0]).valor;
 			}else{
-				System.out.println("Dafuq '"+arr[0]+"'?");
-				return 0.88072879; //Valor que determinei para erro.
+				retorno.error = 404;
+				retorno.compl = arr[0];
+				return retorno;
 			}
 			if (tryParse(arr[1])){
 				b=Double.parseDouble(arr[1]);
 			}else if(p.getVariable(arr[1])!=null){
 				b=p.getVariable(arr[1]).valor;
 			}else{
-				System.out.println("Dafuq '"+arr[0]+"'?");
-				return 0.88072879; //Valor que determinei para erro.
+				retorno.error = 404;
+				retorno.compl = arr[0];
+				return retorno;
 			}
 
 			//Executa a operação que precisa ser realizada e retorna o resultado
-			return execOP(a,b,op);
-		
+			if(op==7&&b==0){ // divisão por zero
+				retorno.error = 666;
+				return retorno;
+			}
+
+			retorno.success = true;
+			retorno.result = execOP(a,b,op);
+			return retorno;
 		// Se não houver atribuição
 		}else{
 			//Verifica se é número ou variável
 			if(tryParse(operacao)){
-				return Double.parseDouble(operacao);
+				retorno.success = true;
+				retorno.result = Double.parseDouble(operacao);
+				return retorno;
 			}else{
 				//Verfica se a variável existe ou não
 				if(p.getVariable(operacao)!=null){
-					return p.getVariable(operacao).valor;
+					retorno.success = true;
+					retorno.result = p.getVariable(operacao).valor;
+					return retorno;
 				}else{
-					return 0.88072879; //Valor que determinei para erro.
+					retorno.error = 404;
+					retorno.compl = operacao.trim();
+					return retorno;
 				}
 			}
 		}
@@ -93,7 +108,6 @@ class Ula{
 			case 6:
 				return a*b;
 			case 7:
-				if(b==0.0){System.out.println("Bem vindo ao inferno, aqui você pode dividir por zero."); return 0.88072879;}
 				return a/b;
 			case 8:
 				return a%b;

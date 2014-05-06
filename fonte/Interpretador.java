@@ -20,6 +20,7 @@ class Interpretador {
         int token,op,v,j,k,n,ret;
         double result;
         Variavel var;
+        RetornoUla retorno;
         Interpretador escopo;
         String temp,arr[],str;
         this.vars = variaveis;
@@ -77,13 +78,13 @@ class Interpretador {
 								if(elseL>0) k=elseL;
 								else k=endL;
 								
-								result = this.ula.resolveOperacao(str,this);
-								if(result==1.0){	
+								retorno = this.ula.resolveOperacao(str,this);
+								if(retorno.result==1.0){	
 									// se a condição do 'if' for verdadeira
 									for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 										arr[j-i-1]=this.linhas[j];
-								}else if(result==0.88072879){
-									// erro na resolução da expressão
+								}else if(!retorno.success){
+									retorno.imprimeErro();
 									return (i+1);
 								}else if(elseL>0){
 									// se a condição do 'if' falhar e houver um 'else'
@@ -170,15 +171,15 @@ class Interpretador {
 							escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'while'
 							arr = new String[200];		  // novo vetor de Strings que conterá as linhas do 'while'
 							
-							result = this.ula.resolveOperacao(str,this);
+							retorno = this.ula.resolveOperacao(str,this);
 
-							if(result==1.0){	
+							if(retorno.result==1.0){	
 								// se a condição do 'while' for verdadeira
 								for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 									arr[j-i-1]=this.linhas[j];
 								i--; // volta pra linha anterior pra verificar de novo o while
-							}else if(result==0.88072879){
-								// erro na resolução da expressão
+							}else if(!retorno.success){
+								retorno.imprimeErro();
 								return (i+1);
 							}else{
 								//pula o while
@@ -206,12 +207,12 @@ class Interpretador {
 
 						}else{
 							// se é pra imprimir um valor
-							result = this.ula.resolveOperacao(str,this); // resolve a expressão
-							if(result!=0.88072879){
+							retorno = this.ula.resolveOperacao(str,this); // resolve a expressão
+							if(retorno.success){
 								// se conseguiu resolver a expressão
-								System.out.println(result);
+								System.out.println(retorno.result);
 							}else{
-								System.out.println("Hã? O quê? Dafuq '"+str+"'?!");
+								retorno.imprimeErro();
 								return i+1;
 							}
 						}
@@ -275,14 +276,15 @@ class Interpretador {
 	// Método para executar a atribuição da operação na variável com o nome passado
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
+		RetornoUla retorno;
 		Variavel v=getVariable(varName.trim());
 		double value;
 		if(v!=null){
-			value = this.ula.resolveOperacao(operacao,this);
-			if(value!=0.88072879){ // 0.88072879 é erro de operação
-				v.valor = this.ula.resolveOperacao(operacao,this);
+			retorno = this.ula.resolveOperacao(operacao,this);
+			if(retorno.success){ // 0.88072879 é erro de operação
+				v.valor = retorno.result;
 			}else{
-				System.out.println("Dafuq '"+operacao.trim()+"'?");
+				retorno.imprimeErro();
 				return false;
 			}
 		}else{

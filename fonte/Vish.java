@@ -46,6 +46,7 @@ class Vish{
             System.out.println("Vish... não entendi o arquivo: " + (args.length > 0 ? args[0] : "(desconhecido)"));
             System.out.println("Uso:");
             System.out.println("    java Vish /caminho/para/arquivo.vish");
+            e.printStackTrace();
         }
 	}
 }
