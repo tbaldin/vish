@@ -36,7 +36,7 @@ class Interpretador {
 					case 0: // CONDICIONAL
 						
 						// str = Linha atual tirando o 'if' já identificado do inicio
-						str = this.linhas[i].trim().substring(Tokens.mainTokens[0].length(),this.linhas[i].trim().length()).trim();
+						str = removeToken(this.linhas[i],0);
 
 						if(str.substring(str.length()-Tokens.condTokens[3].length(),str.length()).equals(Tokens.condTokens[3])){
 							// Se tem o 'then' no final da linha	
@@ -79,7 +79,7 @@ class Interpretador {
 								else k=endL;
 								
 								retorno = this.ula.resolveOperacao(str,this);
-								if(retorno.result==1.0){	
+								if(retorno.success&&retorno.result==1.0){	
 									// se a condição do 'if' for verdadeira
 									for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
 										arr[j-i-1]=this.linhas[j];
@@ -97,7 +97,7 @@ class Interpretador {
 										arr[j-i-1]=this.linhas[j];
 								}
 
-								ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
+								ret=escopo.interpreta(arr,this.vars); // manda executar o escopo
 								if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
 								
 								i=endL; // Continua a execução do escopo atual a partir da linha do 'end if'
@@ -114,7 +114,7 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 1: // DECLARAÇÃO DE VARIÁVEL
 						// linha tirando o var do inicio, não interessa mais.
-						str = this.linhas[i].substring(Tokens.mainTokens[1].length(),this.linhas[i].length()).trim();
+						str = removeToken(this.linhas[i],1);
 
 						if(str.contains(Tokens.varSintax[0])){
 							// nome da variável se for declaração de variável com atribuição
@@ -150,7 +150,7 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\			
 					case 2: // LAÇO WHILE
 						// tira o while do inicio e os parenteses se existirem, fica só a condição
-						str = removeParenteses(linhas[i].trim().substring(Tokens.mainTokens[2].length(),linhas[i].trim().length()).trim());
+						str = removeParenteses(removeToken(this.linhas[i],2));
 
 						//System.out.println("WHILE: "+str);
 						op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
@@ -192,7 +192,7 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 3: // IMPRESSÃO NA TELA
 						// Remove o token do inicio, não precisa mais.
-						str = this.linhas[i].trim().substring(Tokens.mainTokens[3].length(),this.linhas[i].trim().length()).trim();
+						str = str = removeToken(this.linhas[i],3);
 						
 						if(str.substring(0,1).equals("\"")){
 							// se é pra imprimir uma string
@@ -217,6 +217,12 @@ class Interpretador {
 							}
 						}
 						break;
+//-------------------------------------------------------------------------------------------------------------------------------------------\\
+					case 4: // ENTRADA DE DADOS
+						str = removeToken(this.linhas[i],4);
+
+
+					break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					default:  // SE NÃO FOR TOKEN
 						if(this.linhas[i].contains(Tokens.varSintax[0])){
@@ -310,5 +316,9 @@ class Interpretador {
 			return null;
 		}
 		return str; // se não tinha parenteses
+	}
+
+	private String removeToken(String linha,int op){
+		return linha.trim().substring(Tokens.mainTokens[op].length(),linha.trim().length()).trim();
 	}
 }
