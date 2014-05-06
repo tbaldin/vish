@@ -1,0 +1,22 @@
+dim a
+dim b
+dim c
+dim d
+dim e
+
+print "Informe 1/5 numero: "
+scan a
+print "Informe 2/5 numero: "
+scan b
+print "Informe 3/5 numero: "
+scan c
+print "Informe 4/5 numero: "
+scan d
+print "Informe 5/5 numero: "
+scan e
+b = a+b
+c = b+c
+d = c+d
+e = d+e
+print "Média: "
+print e/5
