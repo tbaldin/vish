@@ -221,10 +221,8 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 4: // ENTRADA DE DADOS
 						str = removeToken(this.linhas[i],4);
-						System.out.println("Scan para: '"+str+"'");
 						Scanner value = new Scanner(System.in);
-						
-
+						if(!atribuicao(str,value.nextLine())) return i+1;
 					break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					default:  // SE NÃO FOR TOKEN
