@@ -2,8 +2,6 @@
  * Interpretador das linhas
  *
  * Classe que interpreta cada linha do arquivo aberto.
- *
- * Originalmente Por Fernando Bevilacqua <fernando.bevilacqua@uffs.edu.br>
  * 
  * Por Régis Thiago Feyh <registhiagofeyh@gmail.com>
  */
@@ -12,7 +10,6 @@ import java.util.Arrays;
 class Interpretador {
 	private String linhas[];
 	private Variavel vars[];
-	private String[] condTokens = {"(",")","end if","then","else","wend"};
 	private Ula ula;
 
 	public Interpretador(){
@@ -24,9 +21,6 @@ class Interpretador {
         double result;
         Variavel var;
         Interpretador escopo;
-        String[] mainTokens = {"if","dim ","while","print "};
-    	String[] endOfLines = {"{","}"};
-    	String[] varSintax = {";","="};
         String temp,arr[],str;
         this.vars = variaveis;
         this.linhas = l;
@@ -34,20 +28,20 @@ class Interpretador {
             if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")) {
     			//Se a linha não for nula ou comentada
 
-				token = checkToken(mainTokens,this.linhas[i]);//Verifica o token no incio da linha
+				token = checkToken(Tokens.mainTokens,this.linhas[i]);//Verifica o token no incio da linha
 				
 				switch(token){
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 0: // CONDICIONAL
 						
 						// str = Linha atual tirando o 'if' já identificado do inicio
-						str = this.linhas[i].trim().substring(mainTokens[0].length(),this.linhas[i].trim().length()).trim();
+						str = this.linhas[i].trim().substring(Tokens.mainTokens[0].length(),this.linhas[i].trim().length()).trim();
 
-						if(str.substring(str.length()-this.condTokens[3].length(),str.length()).equals(this.condTokens[3])){
+						if(str.substring(str.length()-Tokens.condTokens[3].length(),str.length()).equals(Tokens.condTokens[3])){
 							// Se tem o 'then' no final da linha	
 
 							// str = linha atual sem o 'if' do início e sem o 'then' já identificado no final e sem os parenteses se existiam
-							str = removeParenteses(str.substring(0,str.length()-this.condTokens[3].length()).trim());
+							str = removeParenteses(str.substring(0,str.length()-Tokens.condTokens[3].length()).trim());
 							
 							if(str==null) return i+1;
 
@@ -62,12 +56,12 @@ class Interpretador {
 								
 								for (endL=i+1;this.linhas[endL]!=null;endL++){
 									// for primeira linha do escopo até o final do arquivo
-									if(checkToken(mainTokens,this.linhas[endL])==0) n++; // se encontrar mais um if, ignora o próximo end if
-									if(this.linhas[endL].trim().equals(this.condTokens[2])) n--; // se encontrar um end if, diminui o contador
+									if(checkToken(Tokens.mainTokens,this.linhas[endL])==0) n++; // se encontrar mais um if, ignora o próximo end if
+									if(this.linhas[endL].trim().equals(Tokens.condTokens[2])) n--; // se encontrar um end if, diminui o contador
 									
-									if(n==1 && elseL<0 && this.condTokens[4].length()<=this.linhas[endL].trim().length())
+									if(n==1 && elseL<0 && Tokens.condTokens[4].length()<=this.linhas[endL].trim().length())
 										// se está no escopo do if em questão e ainda não encontrou um else, procura por um.
-										if(this.linhas[endL].trim().substring(0,this.condTokens[4].length()).equals(this.condTokens[4])) elseL=endL;
+										if(this.linhas[endL].trim().substring(0,Tokens.condTokens[4].length()).equals(Tokens.condTokens[4])) elseL=endL;
 
 									if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 								}
@@ -94,7 +88,7 @@ class Interpretador {
 								}else if(elseL>0){
 									// se a condição do 'if' falhar e houver um 'else'
 									// remove o 'else' do início da linha pro caso de haver um outro 'if' após ele na mesma linha
-									this.linhas[elseL]=this.linhas[elseL].trim().substring(this.condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
+									this.linhas[elseL]=this.linhas[elseL].trim().substring(Tokens.condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
 									
 									if(this.linhas[elseL].length()>0) endL++; // Se existir algo a mais que o else na linha inclui o 'end if' no escopo
 
@@ -119,11 +113,11 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 1: // DECLARAÇÃO DE VARIÁVEL
 						// linha tirando o var do inicio, não interessa mais.
-						str = this.linhas[i].substring(mainTokens[1].length(),this.linhas[i].length()).trim();
+						str = this.linhas[i].substring(Tokens.mainTokens[1].length(),this.linhas[i].length()).trim();
 
-						if(str.contains(varSintax[1])){
+						if(str.contains(Tokens.varSintax[0])){
 							// nome da variável se for declaração de variável com atribuição
-							temp = str.split(varSintax[1],2)[0];
+							temp = str.split(Tokens.varSintax[0],2)[0];
 						}else{
 							// nome da variável se for declaração de variável sem atribuição
 							temp = str;
@@ -134,9 +128,9 @@ class Interpretador {
 							
 							v=nextEmptyVar(); // próxima posição livre no vetor de variáveis
 
-							if(str.contains(varSintax[1])){
+							if(str.contains(Tokens.varSintax[0])){
 								// se existe uma atribuição de valor
-								arr = str.split(varSintax[1],2); // divide str em um vetor de duas posições: antes e depois da igualdade
+								arr = str.split(Tokens.varSintax[0],2); // divide str em um vetor de duas posições: antes e depois da igualdade
 								
 								this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
 								
@@ -155,7 +149,7 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\			
 					case 2: // LAÇO WHILE
 						// tira o while do inicio e os parenteses se existirem, fica só a condição
-						str = removeParenteses(linhas[i].trim().substring(mainTokens[2].length(),linhas[i].trim().length()).trim());
+						str = removeParenteses(linhas[i].trim().substring(Tokens.mainTokens[2].length(),linhas[i].trim().length()).trim());
 
 						//System.out.println("WHILE: "+str);
 						op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
@@ -164,10 +158,10 @@ class Interpretador {
 							// se é uma operação condicional
 							for (k=i+1;this.linhas[k]!=null;k++){
 								// for primeira linha do escopo até o final do arquivo
-								if(this.linhas[k].trim().equals(this.condTokens[5])) break; // se encontrar um 'wend', sai fora
+								if(this.linhas[k].trim().equals(Tokens.condTokens[5])) break; // se encontrar um 'wend', sai fora
 							}
 
-							if(!this.linhas[k].trim().equals(this.condTokens[5])){
+							if(!this.linhas[k].trim().equals(Tokens.condTokens[5])){
 								// Foi até o final do arquivo e não achou o end if do if
 								System.out.println("Cara, se tu abriu um 'while' tu tem que especificar um 'wend', como vou adivinhar onde termina?");
 								return i+1;
@@ -197,7 +191,7 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 3: // IMPRESSÃO NA TELA
 						// Remove o token do inicio, não precisa mais.
-						str = this.linhas[i].trim().substring(mainTokens[3].length(),this.linhas[i].trim().length()).trim();
+						str = this.linhas[i].trim().substring(Tokens.mainTokens[3].length(),this.linhas[i].trim().length()).trim();
 						
 						if(str.substring(0,1).equals("\"")){
 							// se é pra imprimir uma string
@@ -224,9 +218,9 @@ class Interpretador {
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					default:  // SE NÃO FOR TOKEN
-						if(this.linhas[i].contains(varSintax[1])){
+						if(this.linhas[i].contains(Tokens.varSintax[0])){
 							// se há um sinal de igualdade indicando atribuição
-							arr = this.linhas[i].split(varSintax[1],2); // divide em antes e depois da igualdade
+							arr = this.linhas[i].split(Tokens.varSintax[0],2); // divide em antes e depois da igualdade
 
 							if(!atribuicao(arr[0],arr[1].substring(0,arr[1].length()))) return i+1; // se não conseguiu fazer a atribuição
 						}else{
@@ -300,16 +294,16 @@ class Interpretador {
 
 	// Checa e remove os parenteses dos condicionais
 	private String removeParenteses(String str){
-		if(str.substring(0,1).equals(this.condTokens[0])){
+		if(str.substring(0,1).equals(Tokens.condTokens[0])){
 			// se inicia com parenteses
-			if(str.substring(str.length()-this.condTokens[1].length(),str.length()).equals(this.condTokens[1])){
+			if(str.substring(str.length()-Tokens.condTokens[1].length(),str.length()).equals(Tokens.condTokens[1])){
 				// se termina com parenteses
 				return str.substring(1,str.length()-1); // str = condição sem os parenteses, não preciso deles
 			}else{
 				System.out.println("Parenteses aberto sem fechamento. Que vergonha hein.");
 				return null;
 			}
-		}else if(str.substring(str.length()-this.condTokens[1].length(),str.length()).equals(this.condTokens[1])){
+		}else if(str.substring(str.length()-Tokens.condTokens[1].length(),str.length()).equals(Tokens.condTokens[1])){
 			System.out.println("E o inicio desse parenteses aberto, enfio onde?");
 			return null;
 		}

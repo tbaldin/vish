@@ -8,8 +8,6 @@
  */
 
 class Ula{
-	public String[] opULA = {"==","<=","<>",">=","<",">","*","/","%","+","-"};
-
 	// Verifica se é possível converter a String em número.
 	public boolean tryParse(String number){
 		try{
@@ -23,8 +21,8 @@ class Ula{
 	// Verifica qual das operações está sendo executada
 	public int checkOperation(String part){
 		int i;
-		for(i=0;i<this.opULA.length;i++)
-			if(part.contains(this.opULA[i])) return i;
+		for(i=0;i<Tokens.opULA.length;i++)
+			if(part.contains(Tokens.opULA[i])) return i;
 		return -1;
 	}
 
@@ -36,7 +34,7 @@ class Ula{
 		//Se houver alguma operação matemática
 		if(op!=-1){
 			// Divide os operandos em um vetor de duas posições
-			String arr[] = operacao.split("\\"+this.opULA[op],2);
+			String arr[] = operacao.split("\\"+Tokens.opULA[op],2);
 			arr[0]=arr[0].trim();
 			arr[1]=arr[1].trim();
 
