@@ -23,7 +23,7 @@ class Interpretador {
         Variavel var;
         RetornoOperacao retorno;
         Interpretador escopo;
-        String temp,arr[],str;
+        String temp,arr[],str,dim[];
         this.vars = variaveis;
         this.linhas = l;
         for(int i=0;i<this.linhas.length;i++) {
@@ -115,37 +115,39 @@ class Interpretador {
 //-------------------------------------------------------------------------------------------------------------------------------------------\\
 					case 1: // DECLARAÇÃO DE VARIÁVEL
 						// linha tirando o var do inicio, não interessa mais.
-						str = removeToken(this.linhas[i],1);
 
-						if(str.contains(Tokens.varSintax[0])){
-							// nome da variável se for declaração de variável com atribuição
-							temp = str.split(Tokens.varSintax[0],2)[0];
-						}else{
-							// nome da variável se for declaração de variável sem atribuição
-							temp = str;
-						}
+						dim = removeToken(this.linhas[i],1).split(",");
+						for(k=0;k<dim.length;k++){
+							if(dim[k].contains(Tokens.varSintax[0])){
+								// nome da variável se for declaração de variável com atribuição
+								temp = dim[k].split(Tokens.varSintax[0],2)[0];
+							}else{
+								// nome da variável se for declaração de variável sem atribuição
+								temp = dim[k];
+							}
 
-						if(getVariable(temp)==null){
-							// se não existe essa variável
-							
-							v=nextEmptyVar(); // próxima posição livre no vetor de variáveis
-
-							if(str.contains(Tokens.varSintax[0])){
-								// se existe uma atribuição de valor
-								arr = str.split(Tokens.varSintax[0],2); // divide str em um vetor de duas posições: antes e depois da igualdade
+							if(getVariable(temp)==null){
+								// se não existe essa variável
 								
-								this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
-								
-								if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
-									return i+1;
+								v=nextEmptyVar(); // próxima posição livre no vetor de variáveis
+
+								if(dim[k].contains(Tokens.varSintax[0])){
+									// se existe uma atribuição de valor
+									arr = dim[k].split(Tokens.varSintax[0],2); // divide str em um vetor de duas posições: antes e depois da igualdade
+									
+									this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
+									
+									if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
+										return i+1;
+									}
+								}else{
+									// Se é uma declaração simples sem atribuição de valor só cria a variável com o nome.
+									this.vars[v] = new Variavel(temp);
 								}
 							}else{
-								// Se é uma declaração simples sem atribuição de valor só cria a variável com o nome.
-								this.vars[v] = new Variavel(temp);
+								System.out.println("Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
+								return i+1;
 							}
-						}else{
-							System.out.println("Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
-							return i+1;
 						}
 						break;
 //-------------------------------------------------------------------------------------------------------------------------------------------\\			
