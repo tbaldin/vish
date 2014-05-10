@@ -142,7 +142,7 @@ class Interpretador {
 					//-------------------------------------------- TRATAMENTO DO LAÇO WHILE --------------------------------------------\\
 					//------------------------------------------------------------------------------------------------------------------//
 
-					case 2: // LAÇO WHILE
+					case 2:
 						// tira o while do inicio e os parenteses se existirem, fica só a condição
 						str = removeParenteses(removeToken(this.linhas[i],2));
 
@@ -157,7 +157,7 @@ class Interpretador {
 							}
 
 							if(!this.linhas[k].trim().equals(Tokens.condTokens[5])){
-								// Foi até o final do arquivo e não achou o end if do if
+								// Foi até o final do arquivo e não achou o wend do while
 								System.out.println("Cara, se tu abriu um 'while' tu tem que especificar um 'wend', como vou adivinhar onde termina?");
 								return i+1;
 							}
@@ -177,7 +177,7 @@ class Interpretador {
 								return (i+1);
 							}else{
 								//pula o while
-								i=k+1;
+								i=k;
 							}
 							ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
 							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
@@ -224,7 +224,7 @@ class Interpretador {
 						str = removeToken(this.linhas[i],4);
 						Scanner value = new Scanner(System.in);
 						if(!atribuicao(str,value.nextLine())) return i+1;
-					break;
+						break;
 
 					//--------------------------------------------------------------------------------------------------------------------//
 					//-------------------------------------- OPERAÇÕES NÃO IDENTIFICADAS COMO TOKENS--------------------------------------\\

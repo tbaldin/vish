@@ -1,0 +1,18 @@
+print "Que numero deseja verificar?"
+scan k
+dim i=2,j
+while(i<k)
+	if 1==1 then
+		resto = k%i
+		if resto==0 then
+			print "Não é primo"
+			i = k*k
+		else
+			i=i+1
+		end if
+	end if
+wend
+h=k*k
+if(i<>h) then
+	print "É primo"
+end if

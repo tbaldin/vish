@@ -55,7 +55,7 @@ class Ula{
 				b=p.getVariable(arr[1]).valor;
 			}else{
 				retorno.error = 404;
-				retorno.compl = arr[0];
+				retorno.compl = arr[1];
 				return retorno;
 			}
 
