@@ -17,25 +17,31 @@ class Interpretador {
 		this.ula = new Ula();
 	}
 	
-	public int interpreta(String l[], Variavel[] variaveis) {
-        int token,op,v,j,k,n,ret;
-        double result;
-        Variavel var;
+	public int interpreta(String[] l, Variavel[] variaveis) {
+        int token,op,j,k,n,ret;
+        
         RetornoOperacao retorno;
+        	
         Interpretador escopo;
-        String temp,arr[],str,dim[];
+        
+        String arr[],dim[],str;
+
         this.vars = variaveis;
         this.linhas = l;
+
         for(int i=0;i<this.linhas.length;i++) {
-            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")) {
+            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")){
     			//Se a linha não for nula ou comentada
 
-				token = checkToken(Tokens.mainTokens,this.linhas[i]);//Verifica o token no incio da linha
+				token = checkToken(Tokens.mainTokens,this.linhas[i]);	//Verifica o token no incio da linha
 				
 				switch(token){
-//-------------------------------------------------------------------------------------------------------------------------------------------\\
-					case 0: // CONDICIONAL
-						
+					
+					//------------------------------------------------------------------------------------------------------------------//
+					//----------------------------------------- OPERAÇÃO DE DESVIO CONDICIONAL -----------------------------------------\\
+					//------------------------------------------------------------------------------------------------------------------//
+
+					case 0:
 						// str = Linha atual tirando o 'if' já identificado do inicio
 						str = removeToken(this.linhas[i],0);
 
@@ -49,12 +55,13 @@ class Interpretador {
 
 							op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
 
-							if(op>=0&&op<=5){
+							if(op>=0 && op<=5){
 								// se é uma operação condicional
-								n=1; // n é a quantidade de 'end if' a encontrar 
+
+								n = 1;				// n é a quantidade de 'end if' a encontrar 
 								
-								int elseL=-1; // elseL é a linha do 'else' se houver
-								int endL;	  // endL  é a linha do 'end if', precisa existir
+								int elseL = -1; 	// elseL é a linha do 'else' se houver
+								int endL;	 	 	// endL  é a linha do 'end if', precisa existir
 								
 								for (endL=i+1;this.linhas[endL]!=null;endL++){
 									// for primeira linha do escopo até o final do arquivo
@@ -74,12 +81,16 @@ class Interpretador {
 									return i+1;
 								}
 
-								escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'if'
-								arr = new String[200];		  // novo vetor de Strings que conterá as linhas do 'if'
-								if(elseL>0) k=elseL;
-								else k=endL;
+								escopo 	=	new Interpretador();	// instancia um novo interpretador que executará as linhas dentro do escopo do 'if'
+								arr 	=	new String[200];		// novo vetor de Strings que conterá as linhas do 'if'
+
+								// Se tem else, faz o for ir até ele, senão até o endif
+								if(elseL>0) k = elseL;
+								else 		k = endL;
 								
+								// Resolve a expressão booleana
 								retorno = this.ula.resolveOperacao(str,this);
+
 								if(retorno.success&&retorno.result==1.0){	
 									// se a condição do 'if' for verdadeira
 									for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
@@ -89,6 +100,7 @@ class Interpretador {
 									return (i+1);
 								}else if(elseL>0){
 									// se a condição do 'if' falhar e houver um 'else'
+									
 									// remove o 'else' do início da linha pro caso de haver um outro 'if' após ele na mesma linha
 									this.linhas[elseL]=this.linhas[elseL].trim().substring(Tokens.condTokens[4].length(),this.linhas[elseL].trim().length()).trim();
 									
@@ -112,45 +124,24 @@ class Interpretador {
 							return i+1;
 						}
 						break;
-//-------------------------------------------------------------------------------------------------------------------------------------------\\
-					case 1: // DECLARAÇÃO DE VARIÁVEL
-						// linha tirando o var do inicio, não interessa mais.
 
+					//------------------------------------------------------------------------------------------------------------------//
+					//----------------------------------- OPERAÇÃO DE DECLARAÇÃO FORMAL DE VARIÁVEIS -----------------------------------\\
+					//------------------------------------------------------------------------------------------------------------------//
+
+					case 1:
+						// tira o token do inicio e quebra em um vetor das declarações separadas por vírgula
 						dim = removeToken(this.linhas[i],1).split(",");
 						for(k=0;k<dim.length;k++){
-							if(dim[k].contains(Tokens.varSintax[0])){
-								// nome da variável se for declaração de variável com atribuição
-								temp = dim[k].split(Tokens.varSintax[0],2)[0];
-							}else{
-								// nome da variável se for declaração de variável sem atribuição
-								temp = dim[k];
-							}
-
-							if(getVariable(temp)==null){
-								// se não existe essa variável
-								
-								v=nextEmptyVar(); // próxima posição livre no vetor de variáveis
-
-								if(dim[k].contains(Tokens.varSintax[0])){
-									// se existe uma atribuição de valor
-									arr = dim[k].split(Tokens.varSintax[0],2); // divide str em um vetor de duas posições: antes e depois da igualdade
-									
-									this.vars[v] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
-									
-									if(!atribuicao(this.vars[v].nome,arr[1].substring(0,arr[1].length()))){
-										return i+1;
-									}
-								}else{
-									// Se é uma declaração simples sem atribuição de valor só cria a variável com o nome.
-									this.vars[v] = new Variavel(temp);
-								}
-							}else{
-								System.out.println("Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
+							if(expressaoComVariavel(dim[k])==null)
 								return i+1;
-							}
 						}
 						break;
-//-------------------------------------------------------------------------------------------------------------------------------------------\\			
+
+					//------------------------------------------------------------------------------------------------------------------//
+					//-------------------------------------------- TRATAMENTO DO LAÇO WHILE --------------------------------------------\\
+					//------------------------------------------------------------------------------------------------------------------//
+
 					case 2: // LAÇO WHILE
 						// tira o while do inicio e os parenteses se existirem, fica só a condição
 						str = removeParenteses(removeToken(this.linhas[i],2));
@@ -171,8 +162,8 @@ class Interpretador {
 								return i+1;
 							}
 
-							escopo = new Interpretador(); // instancia um novo interpretador que executará as linhas dentro do escopo do 'while'
-							arr = new String[200];		  // novo vetor de Strings que conterá as linhas do 'while'
+							escopo 	=	new Interpretador(); 	// instancia um novo interpretador que executará as linhas dentro do escopo do 'while'
+							arr 	=	new String[200];		// novo vetor de Strings que conterá as linhas do 'while'
 							
 							retorno = this.ula.resolveOperacao(str,this);
 
@@ -192,8 +183,12 @@ class Interpretador {
 							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
 						}
 						break;
-//-------------------------------------------------------------------------------------------------------------------------------------------\\
-					case 3: // IMPRESSÃO NA TELA
+
+					//-------------------------------------------------------------------------------------------------------------------//
+					//------------------------------------------ OPERAÇÃO DE IMPRESSÃO NA TELA ------------------------------------------\\
+					//-------------------------------------------------------------------------------------------------------------------//
+
+					case 3:
 						// Remove o token do inicio, não precisa mais.
 						str = str = removeToken(this.linhas[i],3);
 						
@@ -220,14 +215,22 @@ class Interpretador {
 							}
 						}
 						break;
-//-------------------------------------------------------------------------------------------------------------------------------------------\\
-					case 4: // ENTRADA DE DADOS
+
+					//--------------------------------------------------------------------------------------------------------------------//
+					//------------------------------------------- OPERAÇÃO DE ENTRADA DE DADOS -------------------------------------------\\
+					//--------------------------------------------------------------------------------------------------------------------//
+
+					case 4:
 						str = removeToken(this.linhas[i],4);
 						Scanner value = new Scanner(System.in);
 						if(!atribuicao(str,value.nextLine())) return i+1;
 					break;
-//-------------------------------------------------------------------------------------------------------------------------------------------\\
-					default:  // SE NÃO FOR TOKEN
+
+					//--------------------------------------------------------------------------------------------------------------------//
+					//-------------------------------------- OPERAÇÕES NÃO IDENTIFICADAS COMO TOKENS--------------------------------------\\
+					//-------------------------------- atribuição de valor à variáveis declaradas, no caso--------------------------------//
+
+					default:
 						if(this.linhas[i].contains(Tokens.varSintax[0])){
 							// se há um sinal de igualdade indicando atribuição
 							arr = this.linhas[i].split(Tokens.varSintax[0],2); // divide em antes e depois da igualdade
@@ -297,8 +300,11 @@ class Interpretador {
 				return false;
 			}
 		}else{
-			System.out.println("Dafuq '"+varName.trim()+"'?");
-			return false;
+			// Se a variável não foi encontrada, cria ela com a expressão
+			if(expressaoComVariavel(varName+"="+operacao)==null){
+				System.out.println("Dafuq '"+varName.trim()+"'?");
+				return false;
+			}
 		}
 		return true;
 	}
@@ -323,5 +329,41 @@ class Interpretador {
 
 	private String removeToken(String linha,int op){
 		return linha.trim().substring(Tokens.mainTokens[op].length(),linha.trim().length()).trim();
+	}
+
+	private Variavel expressaoComVariavel(String expressao){
+		String str,arr[];
+		int n;
+		if(expressao.contains(Tokens.varSintax[0])){
+			// nome da variável se for declaração de variável com atribuição
+			str = expressao.split(Tokens.varSintax[0],2)[0];
+		}else{
+			// nome da variável se for declaração de variável sem atribuição
+			str = expressao;
+		}
+
+		if(getVariable(str)==null){
+			// se não existe essa variável
+			
+			n=nextEmptyVar(); // próxima posição livre no vetor de variáveis
+
+			if(expressao.contains(Tokens.varSintax[0])){
+				// se existe uma atribuição de valor
+				arr = expressao.split(Tokens.varSintax[0],2); // divide str em um vetor de duas posições: antes e depois da igualdade
+				
+				this.vars[n] = new Variavel(arr[0]); // cria a variável com o nome à esquerda da igualdade
+				
+				if(!atribuicao(this.vars[n].nome,arr[1].substring(0,arr[1].length()))){
+					return null;
+				}
+			}else{
+				// Se é uma declaração simples sem atribuição de valor só cria a variável com o nome.
+				this.vars[n] = new Variavel(str);
+			}
+		}else{
+			System.out.println("Vish... ou tu usou coisa loca no início do nome ou essa variável já foi declarada cara...");
+			return null;
+		}
+		return this.vars[n];
 	}
 }
