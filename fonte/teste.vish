@@ -1,9 +1,25 @@
-dim a=1,b=2,c=3
-print a
-print b
-print c
-dim d
-dim e = 1,p=99
-print d
-print e
-print p
+print "oi"
+scan j
+o=j*j
+b=2
+a = j
+if a==0 then
+	a = 5/2
+	print a
+	if a <= 1 then 
+		a = a+1
+		print a
+	elseif (a <> 2.5) then
+		a = b+1.2
+		print a
+	else
+		print "ihuuu!"
+		while j<5
+			print j
+			j = j+1
+		wend
+	end if
+else
+	print "tchau"
+end if
+print o
