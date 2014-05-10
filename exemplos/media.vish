@@ -1,8 +1,4 @@
-dim a
-dim b
-dim c
-dim d
-dim e
+dim a,b,c,d,e
 
 print "Informe 1/5 numero: "
 scan a
