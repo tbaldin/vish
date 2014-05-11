@@ -1,0 +1,23 @@
+dim a=0,b,c,d,e,f=10
+while a <	f
+	print a
+	if(b >d) then
+		print c+1
+	end if
+
+	a = 	a	+ 1
+
+	if c < 5 then
+		c = c+1
+	elseif b>c then
+		c= 2+f
+	elseif f==10 then
+		print "oiaaaaa"
+	else
+		print "ok"
+	end if
+wend
+if d==e then
+	print "dae"
+	print c
+end if
