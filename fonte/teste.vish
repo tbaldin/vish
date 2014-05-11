@@ -1,25 +1,20 @@
-print "oi"
-scan j
-o=j*j
-b=2
-a = j
-if a==0 then
-	a = 5/2
-	print a
-	if a <= 1 then 
-		a = a+1
-		print a
-	elseif (a <> 2.5) then
-		a = b+1.2
-		print a
-	else
-		print "ihuuu!"
-		while j<5
-			print j
-			j = j+1
+j=	10000
+while (1==1)
+	i=1
+	
+	while i<20
+		r = 0
+		h=i+j
+	
+		while r<0.2
+			print h+r
+			r=r+0.1
 		wend
+		i=i+10
+	wend
+	j=j+10000
+	if(j>30000) then
+		break
 	end if
-else
-	print "tchau"
-end if
-print o
+wend
+print "tudo certo"
