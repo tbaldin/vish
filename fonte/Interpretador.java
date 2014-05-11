@@ -35,16 +35,17 @@ class Interpretador {
 
 				token = checkToken(Tokens.mainTokens,this.linhas[i]);	//Verifica o token no incio da linha
 				
+				// Se identificou algum token, remove ele do inicio e joga o restante pra str
+				str = (token>0)?removeToken(this.linhas[i],token):"";
+				
 				switch(token){
-					
+
 					//------------------------------------------------------------------------------------------------------------------//
 					//----------------------------------------- OPERAÇÃO DE DESVIO CONDICIONAL -----------------------------------------\\
 					//------------------------------------------------------------------------------------------------------------------//
 
 					case 0:
 						// str = Linha atual tirando o 'if' já identificado do inicio
-						str = removeToken(this.linhas[i],0);
-
 						if(str.substring(str.length()-Tokens.condTokens[3].length(),str.length()).equals(Tokens.condTokens[3])){
 							// Se tem o 'then' no final da linha	
 
@@ -130,8 +131,9 @@ class Interpretador {
 					//------------------------------------------------------------------------------------------------------------------//
 
 					case 1:
-						// tira o token do inicio e quebra em um vetor das declarações separadas por vírgula
-						dim = removeToken(this.linhas[i],1).split(",");
+						// str = linha sem o token do incio
+						// dim = vetor de variáveis a serem declaradas.
+						dim = str.split(",");
 						for(k=0;k<dim.length;k++){
 							if(expressaoComVariavel(dim[k])==null)
 								return i+1;
@@ -143,8 +145,8 @@ class Interpretador {
 					//------------------------------------------------------------------------------------------------------------------//
 
 					case 2:
-						// tira o while do inicio e os parenteses se existirem, fica só a condição
-						str = removeParenteses(removeToken(this.linhas[i],2));
+						// str = linha sem o token, tira os parenteses também, servem pra nada.
+						str = removeParenteses(str);
 
 						if(str==null) return i+1;
 
@@ -201,29 +203,37 @@ class Interpretador {
 					//-------------------------------------------------------------------------------------------------------------------//
 
 					case 3:
-						// Remove o token do inicio, não precisa mais.
-						str = str = removeToken(this.linhas[i],3);
-						
-						if(str.substring(0,1).equals("\"")){
-							// se é pra imprimir uma string
-							if(str.substring(str.length()-1,str.length()).equals("\"")){
-								// se as aspas foram fechadas corretamente
-								str = str.substring(1,str.length()-1);
-								System.out.println(str); // imprime o valor dentro das aspas
-							}else{
-								System.out.println("Fechar as aspas nunca né?");
-								return i+1;
-							}
+						// str = linha sem o print do inicio
+						// Separa a concatenação se houver
+						arr = str.split("&");
 
-						}else{
-							// se é pra imprimir um valor
-							retorno = this.ula.resolveOperacao(str,this); // resolve a expressão
-							if(retorno.success){
-								// se conseguiu resolver a expressão
-								System.out.println(retorno.result);
-							}else{
-								retorno.imprimeErro();
-								return i+1;
+						// processa e imprime todas as partes
+						for(k=0;k<arr.length;k++){
+							if(arr[k].length()>0){
+								if(arr[k].substring(0,1).equals("\"")){
+									// se é pra imprimir uma string
+									if(arr[k].substring(arr[k].length()-1,arr[k].length()).equals("\"")){
+										// se as aspas foram fechadas corretamente
+										arr[k] = arr[k].substring(1,arr[k].length()-1);
+										System.out.print(arr[k]); // imprime o valor dentro das aspas
+									}else{
+										System.out.println("Fechar as aspas nunca né?");
+										return i+1;
+									}
+
+								}else if(arr[k].length()>1 && arr[k].substring(0,2).equals("\\n")){ // valor \n imprime nova linha
+									System.out.println("");
+								}else{
+									// se é pra imprimir um valor
+									retorno = this.ula.resolveOperacao(arr[k],this); // resolve a expressão
+									if(retorno.success){
+										// se conseguiu resolver a expressão
+										System.out.print(retorno.result);
+									}else{
+										retorno.imprimeErro();
+										return i+1;
+									}
+								}
 							}
 						}
 						break;
@@ -233,7 +243,7 @@ class Interpretador {
 					//--------------------------------------------------------------------------------------------------------------------//
 
 					case 4:
-						str = removeToken(this.linhas[i],4);
+						// str = linha sem o token, ou seja, variavel que recebera a entrada de dados
 						Scanner value = new Scanner(System.in);
 						if(!atribuicao(str,value.nextLine())) return i+1;
 						break;

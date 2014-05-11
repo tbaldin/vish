@@ -1,20 +1,8 @@
-j=	10000
-while (1==1)
-	i=1
-	
-	while i<20
-		r = 0
-		h=i+j
-	
-		while r<0.2
-			print h+r
-			r=r+0.1
-		wend
-		i=i+10
-	wend
-	j=j+10000
-	if(j>30000) then
-		break
-	end if
-wend
-print "tudo certo"
+dim a
+b=2
+scan a
+print "Valor de a = "&a&" u.m"&\n
+print a&\n
+print a+1&\n
+print 2+3&\n
+print "regis"&\n&" thiago"
