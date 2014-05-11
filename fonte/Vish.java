@@ -35,6 +35,9 @@ class Vish{
                 linhas[i] = s.nextLine();
                 i++;
             }
+
+            // variável reservada utilizada para verificar break nos laços
+            vars[Tokens.nBreakFlag] = new Variavel("break");
             
             // Inicializamos o interpretador com o vetor de linhas. A partir
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.

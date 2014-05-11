@@ -30,7 +30,7 @@ class Interpretador {
         this.linhas = l;
 
         for(int i=0;i<this.linhas.length;i++) {
-            if(this.linhas[i]!=null && this.linhas[i].length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")){
+            if(this.linhas[i]!=null && this.linhas[i].trim().length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")){
     			//Se a linha não for nula ou comentada
 
 				token = checkToken(Tokens.mainTokens,this.linhas[i]);	//Verifica o token no incio da linha
@@ -146,18 +146,25 @@ class Interpretador {
 						// tira o while do inicio e os parenteses se existirem, fica só a condição
 						str = removeParenteses(removeToken(this.linhas[i],2));
 
+						if(str==null) return i+1;
+
 						//System.out.println("WHILE: "+str);
 						op = this.ula.checkOperation(str); //Verifica o operador existente na expressão
 
 						if(op>=0&&op<=5){
 							// se é uma operação condicional
+							n = 1;				// n é a quantidade de 'end if' a encontrar 
+							
 							for (k=i+1;this.linhas[k]!=null;k++){
 								// for primeira linha do escopo até o final do arquivo
-								if(this.linhas[k].trim().equals(Tokens.condTokens[5])) break; // se encontrar um 'wend', sai fora
+								if(checkToken(Tokens.mainTokens,this.linhas[k])==2) n++; // se encontrar mais um if, ignora o próximo end if
+								if(this.linhas[k].trim().equals(Tokens.condTokens[5])) n--; // se encontrar um end if, diminui o contador
+
+								if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 							}
 
-							if(!this.linhas[k].trim().equals(Tokens.condTokens[5])){
-								// Foi até o final do arquivo e não achou o wend do while
+							if(n>0){
+								// Foi até o final do arquivo e não achou o end if do if
 								System.out.println("Cara, se tu abriu um 'while' tu tem que especificar um 'wend', como vou adivinhar onde termina?");
 								return i+1;
 							}
@@ -167,10 +174,11 @@ class Interpretador {
 							
 							retorno = this.ula.resolveOperacao(str,this);
 
-							if(retorno.result==1.0){	
+							if(retorno.result==1.0&&this.vars[Tokens.nBreakFlag].valor==0.0){	
 								// se a condição do 'while' for verdadeira
-								for(j=i+1;j<k;j++) // prepara o novo vetor de linhas para ser interpretado
-									arr[j-i-1]=this.linhas[j];
+								for(j=i+1;j<k;j++){ // prepara o novo vetor de linhas para ser interpretado
+									arr[j-i]=this.linhas[j];
+								}
 								i--; // volta pra linha anterior pra verificar de novo o while
 							}else if(!retorno.success){
 								retorno.imprimeErro();
@@ -178,9 +186,13 @@ class Interpretador {
 							}else{
 								//pula o while
 								i=k;
+								this.vars[Tokens.nBreakFlag].valor = 0.0;
 							}
 							ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
 							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
+						}else{
+							System.out.println("Cara, tudo bem ter compulsão por laços infinitos, mas até pra isso tu tem que por uma CONDIÇÃO. Cadê a condição?");
+							return i+1;
 						}
 						break;
 
@@ -224,6 +236,14 @@ class Interpretador {
 						str = removeToken(this.linhas[i],4);
 						Scanner value = new Scanner(System.in);
 						if(!atribuicao(str,value.nextLine())) return i+1;
+						break;
+
+					//--------------------------------------------------------------------------------------------------------------------//
+					//--------------------------------------------- COMANDO BREAK PARA LAÇOS ---------------------------------------------\\
+					//--------------------------------------------------------------------------------------------------------------------//
+
+					case 5:
+						this.vars[Tokens.nBreakFlag].valor = 1.0;
 						break;
 
 					//--------------------------------------------------------------------------------------------------------------------//
