@@ -36,7 +36,7 @@ class Interpretador {
 				token = checkToken(Tokens.mainTokens,this.linhas[i]);	//Verifica o token no incio da linha
 				
 				// Se identificou algum token, remove ele do inicio e joga o restante pra str
-				str = (token>0)?removeToken(this.linhas[i],token):"";
+				str = (token>=0)?removeToken(this.linhas[i],token):"";
 				
 				switch(token){
 
@@ -46,7 +46,7 @@ class Interpretador {
 
 					case 0:
 						// str = Linha atual tirando o 'if' já identificado do inicio
-						if(str.substring(str.length()-Tokens.condTokens[3].length(),str.length()).equals(Tokens.condTokens[3])){
+						if(str.substring(str.length()-Tokens.condTokens[3].length(),str.length()).toLowerCase().equals(Tokens.condTokens[3])){
 							// Se tem o 'then' no final da linha	
 
 							// str = linha atual sem o 'if' do início e sem o 'then' já identificado no final e sem os parenteses se existiam
@@ -67,11 +67,11 @@ class Interpretador {
 								for (endL=i+1;this.linhas[endL]!=null;endL++){
 									// for primeira linha do escopo até o final do arquivo
 									if(checkToken(Tokens.mainTokens,this.linhas[endL])==0) n++; // se encontrar mais um if, ignora o próximo end if
-									if(this.linhas[endL].trim().equals(Tokens.condTokens[2])) n--; // se encontrar um end if, diminui o contador
+									if(this.linhas[endL].trim().toLowerCase().equals(Tokens.condTokens[2])) n--; // se encontrar um end if, diminui o contador
 									
 									if(n==1 && elseL<0 && Tokens.condTokens[4].length()<=this.linhas[endL].trim().length())
 										// se está no escopo do if em questão e ainda não encontrou um else, procura por um.
-										if(this.linhas[endL].trim().substring(0,Tokens.condTokens[4].length()).equals(Tokens.condTokens[4])) elseL=endL;
+										if(this.linhas[endL].trim().toLowerCase().substring(0,Tokens.condTokens[4].length()).equals(Tokens.condTokens[4])) elseL=endL;
 
 									if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 								}
@@ -160,7 +160,7 @@ class Interpretador {
 							for (k=i+1;this.linhas[k]!=null;k++){
 								// for primeira linha do escopo até o final do arquivo
 								if(checkToken(Tokens.mainTokens,this.linhas[k])==2) n++; // se encontrar mais um if, ignora o próximo end if
-								if(this.linhas[k].trim().equals(Tokens.condTokens[5])) n--; // se encontrar um end if, diminui o contador
+								if(this.linhas[k].trim().toLowerCase().equals(Tokens.condTokens[5])) n--; // se encontrar um end if, diminui o contador
 
 								if(n==0) break; // n == 0 significa que encontrou o end if do escopo, sai fora do for.
 							}
@@ -283,7 +283,7 @@ class Interpretador {
 		int i;
 		for(i=0;i<tokens.length;i++){
 			if(tokens[i].length()<=part.replaceAll("^\\s+", "").length()){
-				if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()))){
+				if(tokens[i].equals(part.replaceAll("^\\s+", "").substring(0,tokens[i].length()).toLowerCase())){
 					return i;
 				}
 			}
