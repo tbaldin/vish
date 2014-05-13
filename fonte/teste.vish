@@ -1,8 +1,12 @@
-dim a
-b=2
-scan a
-print "Valor de a = "&a&" u.m"&\n
-print a&\n
-print a+1&\n
-print 2+3&\n
-print "regis"&\n&" thiago"
+DIM a
+	While a<5
+		print a&\n
+		a = a+1
+		if a > 3 Then
+			break
+		ElseIf a<=2 then
+			print "ok"
+		ELSE
+			print "não"
+		end iF
+	wenD
