@@ -8,8 +8,15 @@
  */
 
 class Ula{
-	// Verifica se é possível converter a String em número.
-	public boolean tryParse(String number){
+	/*** 
+	*  Verifica se é possível converter a String em número. Essa classe serve para verificar se estamos trabalhando
+	*  com constantes ou variáveis.
+	*
+	* @param number: String que representa o número para tentar converte-lo para double
+	*
+	* @return se é possível converter a string passada em número
+	*/
+	public boolean tryParseDouble(String number){
 		try{
 			double a = Double.parseDouble(number);
 			return true;
@@ -18,7 +25,13 @@ class Ula{
 		}
 	}
 
-	// Verifica qual das operações está sendo executada
+	/***
+	* Verifica qual a operação do vetor Tokens.opULA que será executada na string passada
+	*
+	* @param part: expressão com alguma operação aritmética ou matemática
+	*
+	* @return a posição do vetor Tokens.opULA correspondente a operação que será realizada.
+	*/
 	public int checkOperation(String part){
 		int i;
 		for(i=0;i<Tokens.opULA.length;i++)
@@ -26,7 +39,16 @@ class Ula{
 		return -1;
 	}
 
-	// Resolve a operação passada na String. O interpretador é necessário para buscar as variáveis através de seus métodos
+	/*** 
+	* Resolve a expressão passada na String. O interpretador é necessário para buscar o valor de possíveis variáveis existentes
+	* na expressão.
+	*
+	* @param operacao: Expressao matemática ou aritmética com no máximo dois operandos.
+	*
+	* @param p: 	   Interpretador em execução que possui as variáveis caso precise consultar o valor
+	*
+	* @return objeto RetornoOperacao com o resultado double da operacao e o status de erro, caso ocorra.
+	*/
 	public RetornoOperacao resolveOperacao(String operacao, Interpretador p){
 		double a,b;
 		RetornoOperacao retorno = new RetornoOperacao();
@@ -40,7 +62,7 @@ class Ula{
 			arr[1]=arr[1].trim();
 
 			//Busca os valores para a operação
-			if(tryParse(arr[0])){
+			if(tryParseDouble(arr[0])){
 				a=Double.parseDouble(arr[0]);
 			}else if(p.getVariable(arr[0])!=null){
 				a=p.getVariable(arr[0]).valor;
@@ -49,7 +71,7 @@ class Ula{
 				retorno.compl = arr[0];
 				return retorno;
 			}
-			if (tryParse(arr[1])){
+			if (tryParseDouble(arr[1])){
 				b=Double.parseDouble(arr[1]);
 			}else if(p.getVariable(arr[1])!=null){
 				b=p.getVariable(arr[1]).valor;
@@ -71,7 +93,7 @@ class Ula{
 		// Se não houver atribuição
 		}else{
 			//Verifica se é número ou variável
-			if(tryParse(operacao)){
+			if(tryParseDouble(operacao)){
 				retorno.success = true;
 				retorno.result = Double.parseDouble(operacao);
 				return retorno;
@@ -90,7 +112,15 @@ class Ula{
 		}
 	}
 
-	// Executa a operação lógica ou aritmética
+	/***
+	* Executa a operação lógica ou aritmética de dois operandos já convertidos para números com o código da op
+	*
+	* @params a,b: os operandos para a operação
+	*
+	* @param op: posição do vetor Tokens.opULA correspondente a operação que será executada.
+	*
+	* @return o valor double da operação, seja ela matemática ou aritmética.
+	*/
 	public double execOP(double a, double b, int op){
 		switch(op){
 			case 0:

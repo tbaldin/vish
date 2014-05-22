@@ -1,12 +1,12 @@
-DIM a
-	While a<5
-		print a&\n
-		a = a+1
-		if a > 3 Then
-			break
-		ElseIf a<=2 then
-			print "ok"
-		ELSE
-			print "não"
-		end iF
-	wenD
+
+While a<5
+	print a&\n
+	a = a+1
+	if a > 3 Then
+		break
+	ElseIf a<=2 then
+		print "ok"
+	ELSE
+		print "não"
+	end iF
+wenD

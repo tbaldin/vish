@@ -13,10 +13,25 @@ class Interpretador {
 	private Variavel vars[];
 	private Ula ula;
 
+	/***
+	* Construtor que instancia a ULA para auxiliar nas operações
+	*/
 	public Interpretador(){
 		this.ula = new Ula();
 	}
 	
+
+	/***
+	* Método que interpreta as linhas do arquivo e controla as variáveis
+	*
+	* @param l: linhas para serem interpretadas
+	*
+	* @param variaveis: vetor de variáveis da interpretação. Serve para quando existir um laço ou um
+	*					condicional que instanciará um novo interpretador e chamará este método para
+	*					executar o escopo.
+	*
+	* @return 0 se executou corretamente ou o número da linha se houver algum problema na interpretação.
+	*/
 	public int interpreta(String[] l, Variavel[] variaveis) {
         int token,op,j,k,n,ret;
         
@@ -278,7 +293,15 @@ class Interpretador {
 		return 0; // tudo ok.
 	}
 
-	// Método que verifica o que a linha atual deve fazer
+	/***
+	* Método que verifica o que a linha atual deve fazer
+	*
+	* @param tokens: Vetor de tokens para verificar
+	* 
+	* @param part: String para procurar por algum dos tokens
+	*
+	* @return a posição do token no vetor passado ou -1 se não encontrar nenhuma correspondência
+	*/
 	private int checkToken(String[] tokens, String part){
 		int i;
 		for(i=0;i<tokens.length;i++){
@@ -291,7 +314,13 @@ class Interpretador {
 		return -1;
 	}
 
-	// Método que busca o valor da variável correspondente ao nome passado
+	/***
+	* Método que busca a variável correspondente ao nome passado
+	*
+	* @param name: variável que deseja consultar o valor
+	*
+	* @return o objeto Variavel que possui o nome consultado ou null se não existir
+	*/
 	public Variavel getVariable(String name){
 		int i=0;
 		String permitidos = "abcdefghijklmnopqrstuvxyz_";
@@ -308,14 +337,28 @@ class Interpretador {
 		return null;
 	}
 
-	// Retorna a posição no vetor de variáveis disponível para a próxima variável
+	/***
+	* Busca a posição para a próxima variável
+	*
+	* @return a posição no vetor de variávels do interpretador disponível para ser
+	*		  utilizada.
+	*/
 	private int nextEmptyVar(){
 		int i=0;
 		while(this.vars[i]!=null) i++;
 		return i;
 	}
 
-	// Método para executar a atribuição da operação na variável com o nome passado
+
+	/***
+	* Executa uma atribuição a uma variável
+	*
+	* @param varName: nome da variável que deseja atribuir um valor
+	*
+	* @param operacao: String contendo um número ou uma operação matemática com variáveis ou não para ser atribuido a variável
+	*
+	* @return se a operação foi executada com sucesso ou não
+	*/
 	private boolean atribuicao(String varName, String operacao){
 		String arr[];
 		RetornoOperacao retorno;
@@ -339,7 +382,15 @@ class Interpretador {
 		return true;
 	}
 
-	// Checa e remove os parenteses dos condicionais
+	/***
+	* Os parenteses não servem pra nada, mas se for utilizado esse método verifica se foram utilizados da forma correta,
+	* ou seja, parenteses aberto e depois fechado. Após isso remove.
+	*
+	* @param str: String que possivelmente contém parenteses
+	*
+	* @return a string sem os parenteses ou null se alguem não os utilizou da maneira correta
+	*/
+
 	private String removeParenteses(String str){
 		if(str.substring(0,1).equals(Tokens.condTokens[0])){
 			// se inicia com parenteses
@@ -357,10 +408,29 @@ class Interpretador {
 		return str; // se não tinha parenteses
 	}
 
+
+	/***
+	* Remove o token já encontrado no início da linha repassada. Após checar qual token precisa o interpretador
+	* não precisa mais dele no início da String correspondente à linha, fica só o restante do comando
+	* 
+	* @param linha: linha atual do interpretador para remover o token do início
+	*
+	* @param op: 	código do token identificado que será removido
+	*/
 	private String removeToken(String linha,int op){
 		return linha.trim().substring(Tokens.mainTokens[op].length(),linha.trim().length()).trim();
 	}
 
+
+	/***
+	* Recebe uma expressão com uma nova variável recebendo ou não algum valor. Se a variável já existir dá erro.
+	* Se não exsitir, cria e atribui seu respectivo valor.
+	*
+	* @param expressao: expressão com a variável. Por exemplo: a=j+1, criará a variável a, se não existir, e irá
+	*											  atribuir a ela o valor de j+1. j deve existir.
+	*
+	* @return a variável criada se a operação for executada com sucesso, null se der algum problema
+	*/
 	private Variavel expressaoComVariavel(String expressao){
 		String str,arr[];
 		int n;

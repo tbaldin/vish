@@ -10,6 +10,9 @@ class RetornoOperacao{
 		error = 0;
 	}
 
+	/***
+	* Imprime na tela a mensagem correspondente ao código do erro gerado
+	*/
 	public void imprimeErro(){
 		switch(error){
 			case 404:
