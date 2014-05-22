@@ -1,12 +1,29 @@
+print "Calculando a media de 3 numeros: "&\n
+print \n&"Informe o primeiro: "
+scan m1
+print "Informe o segundo: "
+scan m2
+print "Informe o terceiro: "
+scan m3
 
-While a<5
-	print a&\n
-	a = a+1
-	if a > 3 Then
+media = m1+m2
+media = media+m3
+media = media/3
+
+print "Resultado da media entre "&m1&", "&m2&" e "&m3&" = "&media&\n
+
+print \n&"Mostrando N numeros pares:"&\n
+print "Quantos números pares deseja imprimir? "
+scan limite
+dim i=0,count=0
+while(1==1)
+	if count >= limite then
 		break
-	ElseIf a<=2 then
-		print "ok"
-	ELSE
-		print "não"
-	end iF
-wenD
+	end if
+	par = i%2
+	if(par==0) then
+		print i&\n
+		count = count +1
+	end if
+	i=i+1
+wend
