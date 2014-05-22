@@ -44,7 +44,7 @@ class Interpretador {
         this.vars = variaveis;
         this.linhas = l;
 
-        for(int i=0;i<this.linhas.length;i++) {
+        for(int i=0;i<this.linhas.length&&this.vars[Tokens.nBreakFlag].valor==0.0;i++) {
             if(this.linhas[i]!=null && this.linhas[i].trim().length()>0 && !this.linhas[i].trim().substring(0,1).equals("'")){
     			//Se a linha não for nula ou comentada
 
