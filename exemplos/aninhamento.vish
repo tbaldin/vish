@@ -1,0 +1,25 @@
+dim a=10
+print "a vale 10.0. "&\n&"Informe o valor de b: "
+scan b
+if a==b then
+	print "a("&a&") é igual a b("&b&")"&\n
+else
+	if a<b then
+		print "a("&a&") é MENOR que b("&b&")"&\n
+		while 1==1
+			print a&\n
+			a=a+1
+			if a>b then
+				print "Agora a é maior: "&a&\n
+				break
+			end if
+		wend
+	else if a>b then
+		print "a("&a&") é MAIOR que b("&b&")"&\n
+		while a>b
+			print b&\n
+			b=b+1
+		wend
+		print "Agora B é igual: "&b&\n
+	end if
+end if
