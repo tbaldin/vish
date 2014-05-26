@@ -18,6 +18,15 @@ else
 		print "a("&a&") é MAIOR que b("&b&")"&\n
 		while a>b
 			print b&\n
+			i=0
+			while i<a
+				print "--"&i&\n
+				i=i+1
+				if(i>5) then
+					break
+				end if
+			wend
+			print "volta"&\n
 			b=b+1
 		wend
 		print "Agora B é igual: "&b&\n
