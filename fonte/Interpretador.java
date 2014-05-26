@@ -203,9 +203,12 @@ class Interpretador {
 							}else{
 								//pula o while
 								i=k;
-								this.vars[Tokens.nBreakFlag].valor = 0.0;
 							}
 							ret = escopo.interpreta(arr,this.vars); // manda executar o escopo
+							if(this.vars[Tokens.nBreakFlag].valor==1){
+								this.vars[Tokens.nBreakFlag].valor = 0;
+								i=k;
+							}
 							if(ret!=0) return ret+i+1; //se houve um erro na execução do escopo
 						}else{
 							System.out.println("Cara, tudo bem ter compulsão por laços infinitos, mas até pra isso tu tem que por uma CONDIÇÃO. Cadê a condição?");
