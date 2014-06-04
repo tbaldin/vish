@@ -227,12 +227,12 @@ class Interpretador {
 
 						// processa e imprime todas as partes
 						for(k=0;k<arr.length;k++){
-							if(arr[k].length()>0){
-								if(arr[k].substring(0,1).equals("\"")){
+							if(arr[k].trim().length()>0){
+								if(arr[k].trim().substring(0,1).equals("\"")){
 									// se é pra imprimir uma string
-									if(arr[k].substring(arr[k].length()-1,arr[k].length()).equals("\"")){
+									if(arr[k].trim().substring(arr[k].trim().length()-1,arr[k].trim().length()).equals("\"")){
 										// se as aspas foram fechadas corretamente
-										arr[k] = arr[k].substring(1,arr[k].length()-1);
+										arr[k] = arr[k].trim().substring(1,arr[k].trim().length()-1);
 										System.out.print(arr[k]); // imprime o valor dentro das aspas
 									}else{
 										System.out.println("Fechar as aspas nunca né?");
