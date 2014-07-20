@@ -4,6 +4,7 @@
  * Classe que interpreta cada linha do arquivo aberto.
  * 
  * Por Régis Thiago Feyh <registhiagofeyh@gmail.com>
+ * Alteração inclusão vetor - Taiane e Diego
  */
 
 import java.util.Arrays;
@@ -148,6 +149,9 @@ class Interpretador {
 					case 1:
 						// str = linha sem o token do incio
 						// dim = vetor de variáveis a serem declaradas.
+						if (str.contains ("[")){
+							str = converteVetor(str);						
+						}
 						dim = str.split(",");
 						for(k=0;k<dim.length;k++){
 							if(expressaoComVariavel(dim[k])==null)
@@ -227,6 +231,9 @@ class Interpretador {
 
 						// processa e imprime todas as partes
 						for(k=0;k<arr.length;k++){
+							if(arr[k].contais("[")){
+								arr[k] = trocaIndiceVetor(arr[k]);
+							}
 							if(arr[k].trim().length()>0){
 								if(arr[k].trim().substring(0,1).equals("\"")){
 									// se é pra imprimir uma string
@@ -326,6 +333,10 @@ class Interpretador {
 	*/
 	public Variavel getVariable(String name){
 		int i=0;
+		//
+		if(name.contains("[")){
+			name = trocaIndiceVetor(name);
+		}
 		String permitidos = "abcdefghijklmnopqrstuvxyz_";
 		if(permitidos.contains(name.trim().substring(0,1).toLowerCase())){
 			while(this.vars[i]!=null){
@@ -367,6 +378,8 @@ class Interpretador {
 		RetornoOperacao retorno;
 		Variavel v=getVariable(varName.trim());
 		double value;
+		if(varName.contais("["))
+			var Name=trocaIndiceVetor(varName);
 		if(v!=null){
 			retorno = this.ula.resolveOperacao(operacao,this);
 			if(retorno.success){ // 0.88072879 é erro de operação
@@ -469,4 +482,65 @@ class Interpretador {
 		}
 		return this.vars[n];
 	}
-}
+	private String converteVetor(String x){
+ +		String vet[],tmp1,tmp2;
+ +		int num,k;
+ +		vet = x.split(",");
+ +		x="";
+ +			for(k=0;k<vet.length;k++){
+ +				if(vet[k].contains("[")){
+ +				int a=0;
+ +				tmp1="";
+ +				tmp2="";
+ +					while(vet[k].charAt(a)!='['){
+ +						tmp1+=vet[k].charAt(a);
+ +						a++;				
+ +					}
+ +					a++;
+ +					while(vet[k].charAt(a)!=']'){
+ +						tmp2+=vet[k].charAt(a);
+ +						a++;				
+ +					}
+ +					num=Integer.parseInt(tmp2);
+ +					tmp2=tmp1+"[0]";
+ +					for(a=1;a<num;a++){
+ +						tmp2+=","+tmp1+"["+a+"]";
+ +					}
+ +					vet[k]=vet[k].replace(vet[k],tmp2);
+ +				}
+ +				x+=vet[k]+",";
+ +			}
+ +	return x;
+ +	}
+ +	private String trocaIndiceVetor(String x){
+ +		int a=0;
+ +		int m=0;
+ +		String tmp1,tmp2;
+ +		tmp1="";
+ +		tmp2="";
+ +		
+ +		while(x.charAt(a)!='['){
+ +			tmp1+=x.charAt(a);
+ +			a++;				
+ +		}
+ +		a++;
+ +		while(x.charAt(a)!=']'||m!=0){
+ +			if(x.charAt(a)=='['){
+ +				m++;
+ +			}
+ +			if(x.charAt(a)==']'){
+ +				m--;
+ +			}
+ +			tmp2+=x.charAt(a);
+ +			a++;				
+ +		}
+ +		if(tmp2.charAt(0)>='0'&&tmp2.charAt(0)<='9'){
+ +			tmp2=tmp1+"["+Integer.parseInt(tmp2)+"]";
+ +			x=x.replace(x,tmp2);
+ +			return x;
+ +		}
+ +		tmp2=tmp1+"["+(int)(getVariable(tmp2).valor)+"]";
+ +		x=x.replace(x,tmp2);
+ +		return x;
+ +	}
+ +}
