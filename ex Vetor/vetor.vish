@@ -1,0 +1,7 @@
+dim vet[5],i
+while i < 6
+	vet[i] = i+10
+wend
+while i < 6
+	print vet[i]
+wend
