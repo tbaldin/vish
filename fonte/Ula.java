@@ -53,7 +53,7 @@ class Ula{
 		double a,b;
 		RetornoOperacao retorno = new RetornoOperacao();
 		int op = checkOperation(operacao);
-		
+
 		//Se houver alguma operação matemática
 		if(op!=-1){
 			// Divide os operandos em um vetor de duas posições

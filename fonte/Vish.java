@@ -18,6 +18,7 @@ class Vish{
         Interpretador b;
         Variavel[] vars = new Variavel[1000]; // Código pode ter, no máximo, 1000 variáveis.
         String linhas[] = new String[2000]; // arquivo pode ter, no máximo, 2000 linhas.
+        Funcion[] funcion = new Funcion[10]; // arquivo pode ter no máximo, 10 funções.
         int ret;
         
         try{
@@ -41,7 +42,7 @@ class Vish{
             
             // Inicializamos o interpretador com o vetor de linhas. A partir
             // desse ponto, o objeto "b" irá interpretar o código lido do arquivo.
-            ret = b.interpreta(linhas,vars);
+            ret = b.interpreta(linhas,vars,funcion);
             if(ret!=0){
                 System.out.println("Houston we have a problem na Linha '"+ret+"'. Abortar missão.");
             }            
