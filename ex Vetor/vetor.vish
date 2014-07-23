@@ -1,7 +1,7 @@
 dim vet[5],i
-while i < 6
+while i < 5
 	vet[i] = i+10
 wend
-while i < 6
+while i < 5
 	print vet[i]
 wend
